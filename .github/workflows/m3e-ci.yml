@@ -5,6 +5,10 @@ on:
     branches: [ "m3-expressive-redesign" ]
   workflow_dispatch:
 
+concurrency:
+  group: m3e-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
