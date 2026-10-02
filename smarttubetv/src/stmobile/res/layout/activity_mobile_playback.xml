@@ -927,7 +927,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/mobile_watch_subscribe"
-                        style="@style/Widget.MaterialComponents.Button"
+                        style="@style/Widget.NewTube.Button.Pill"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -942,8 +942,7 @@
                         android:text="@string/mobile_watch_subscribe"
                         android:textAllCaps="false"
                         android:textColor="@color/mobile_color_on_inverse_surface"
-                        android:textSize="14sp"
-                        app:cornerRadius="20dp" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
