@@ -363,7 +363,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/mobile_m3_surface_container"
-        app:itemActiveIndicatorColor="@color/mobile_m3_secondary_container"
         app:itemIconTint="@color/mobile_bottom_nav_item"
         app:itemTextColor="@color/mobile_bottom_nav_item"
         app:labelVisibilityMode="labeled"
