@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Section header row for an OptionCategory.title (radio/checkbox/string-list categories). -->
+<!-- Expressive section label: strong color role, generous breathing room above grouped cards. -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_header_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="16dp"
-    android:paddingTop="16dp"
-    android:paddingEnd="16dp"
+    android:paddingStart="20dp"
+    android:paddingTop="20dp"
+    android:paddingEnd="20dp"
     android:paddingBottom="8dp"
-    android:textColor="@color/mobile_color_on_surface_secondary"
+    android:textColor="@color/mobile_m3_primary"
     android:textSize="14sp"
     android:textStyle="bold"
     tools:text="Video quality" />
