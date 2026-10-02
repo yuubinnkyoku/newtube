@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,6 +22,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
 
 import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionCategory;
@@ -126,7 +127,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     private View mHandle;
     private MaxHeightRecyclerView mRecyclerView;
     private TextView mTitleView;
-    private ImageButton mBackButton;
+    private MaterialButton mBackButton;
     private DialogRowAdapter mAdapter;
 
     /** true = full-screen settings surface; false (default) = bottom sheet overlay. */
