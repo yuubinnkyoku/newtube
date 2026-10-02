@@ -4,6 +4,32 @@
          ones (the palette the app shipped before the Theme setting, unchanged). A colour with no
          night entry is the same in both themes: the accent, and everything drawn over pictures. -->
     <color name="mobile_color_primary">#FF0000</color>
+    <!-- NEWTUBE(m3e): Material 3 Expressive role palette. Playback/progress keeps the
+         stronger YouTube red above; component surfaces use softer tonal roles. -->
+    <color name="mobile_m3_primary">#B32648</color>
+    <color name="mobile_m3_on_primary">#FFFFFF</color>
+    <color name="mobile_m3_primary_container">#FFD9DF</color>
+    <color name="mobile_m3_on_primary_container">#3F0010</color>
+    <color name="mobile_m3_secondary">#A7354F</color>
+    <color name="mobile_m3_on_secondary">#FFFFFF</color>
+    <color name="mobile_m3_secondary_container">#FFD9E1</color>
+    <color name="mobile_m3_on_secondary_container">#3F071A</color>
+    <color name="mobile_m3_tertiary">#00639B</color>
+    <color name="mobile_m3_on_tertiary">#FFFFFF</color>
+    <color name="mobile_m3_tertiary_container">#CDE5FF</color>
+    <color name="mobile_m3_on_tertiary_container">#001D33</color>
+    <color name="mobile_m3_surface_variant">#F4E7EA</color>
+    <color name="mobile_m3_on_surface_variant">#554347</color>
+    <color name="mobile_m3_surface_bright">#FFFFFF</color>
+    <color name="mobile_m3_surface_dim">#E4DADD</color>
+    <color name="mobile_m3_surface_container_lowest">#FFFFFF</color>
+    <color name="mobile_m3_surface_container_low">#FFF7F8</color>
+    <color name="mobile_m3_surface_container">#F9F0F2</color>
+    <color name="mobile_m3_surface_container_high">#F3EAEC</color>
+    <color name="mobile_m3_surface_container_highest">#EDE4E6</color>
+    <color name="mobile_m3_outline">#887276</color>
+    <color name="mobile_m3_outline_variant">#DBC0C5</color>
+
     <color name="mobile_color_primary_dark">#CC0000</color>
     <!-- Cast: the only place the app tints an icon to show a live connection. Was the stock
          Material pink (#FF4081) inherited from the theme's colorAccent, which leaked into
