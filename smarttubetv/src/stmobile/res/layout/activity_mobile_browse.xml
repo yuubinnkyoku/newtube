@@ -18,16 +18,20 @@
     <!-- NEWTUBE(you-subscreen): back arrow shown (with the section's name in the title bar) only
          while a section opened from a You row is on screen - BrowseTopBar. GONE otherwise, and a
          GONE view collapses to a point at the start, so the wordmark keeps its 16dp inset. -->
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/mobile_title_back"
+        style="?attr/materialIconButtonStyle"
         android:layout_width="48dp"
-        android:layout_height="@dimen/mobile_title_bar_height"
+        android:layout_height="48dp"
         android:layout_marginStart="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/mobile_dialog_back"
-        android:padding="12dp"
-        android:src="@drawable/ic_mobile_back_arrow"
+        android:minWidth="48dp"
+        android:text=""
         android:visibility="gone"
+        app:icon="@drawable/ic_mobile_back_arrow"
+        app:iconSize="24dp"
+        app:iconTint="@color/mobile_color_on_surface"
+        app:layout_constraintBottom_toBottomOf="@id/mobile_title_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,26 +54,34 @@
 
     <!-- Cast picker entry on the home feed, like the official app's top bar. Tinted with the
          accent while a session is connected (MobileBrowseActivity.updateCastIconTint). -->
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/mobile_cast_button"
+        style="?attr/materialIconButtonStyle"
         android:layout_width="48dp"
-        android:layout_height="@dimen/mobile_title_bar_height"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_height="48dp"
         android:contentDescription="@string/mobile_cast_button"
-        android:padding="12dp"
-        android:src="@drawable/ic_mobile_cast"
+        android:minWidth="48dp"
+        android:text=""
+        app:icon="@drawable/ic_mobile_cast"
+        app:iconSize="24dp"
+        app:iconTint="@color/mobile_color_on_surface"
+        app:layout_constraintBottom_toBottomOf="@id/mobile_title_bar"
         app:layout_constraintEnd_toStartOf="@id/mobile_search_button"
         app:layout_constraintTop_toTopOf="@id/mobile_title_bar" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/mobile_search_button"
+        style="?attr/materialIconButtonFilledTonalStyle"
         android:layout_width="48dp"
-        android:layout_height="@dimen/mobile_title_bar_height"
-        android:layout_marginEnd="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
         android:contentDescription="@string/mobile_search_button"
-        android:padding="12dp"
-        android:src="@drawable/ic_mobile_search"
+        android:minWidth="48dp"
+        android:text=""
+        app:icon="@drawable/ic_mobile_search"
+        app:iconSize="24dp"
+        app:iconTint="@color/mobile_m3_on_secondary_container"
+        app:layout_constraintBottom_toBottomOf="@id/mobile_title_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/mobile_title_bar" />
 
@@ -274,7 +286,7 @@
         android:focusable="true"
         android:visibility="gone"
         app:cardBackgroundColor="@android:color/black"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="20dp"
         app:cardElevation="8dp"
         app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
@@ -347,17 +359,15 @@
          so the bar paints through to the display edge without squeezing the row. -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/mobile_bottom_nav"
+        style="@style/Widget.Material3Expressive.BottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/mobile_color_background"
-        app:itemIconSize="24dp"
+        android:background="@color/mobile_m3_surface_container"
+        app:itemActiveIndicatorColor="@color/mobile_m3_secondary_container"
         app:itemIconTint="@color/mobile_bottom_nav_item"
-        app:itemTextAppearanceActive="@style/MobileBottomNavText"
-        app:itemTextAppearanceActiveBoldEnabled="false"
-        app:itemTextAppearanceInactive="@style/MobileBottomNavText"
-        app:paddingBottomSystemWindowInsets="true"
         app:itemTextColor="@color/mobile_bottom_nav_item"
         app:labelVisibilityMode="labeled"
+        app:paddingBottomSystemWindowInsets="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
