@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -25,6 +24,8 @@ import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
 
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
@@ -89,9 +90,9 @@ public class MobileSearchActivity extends MobileActivity
     private MobileMiniPlayerController mMiniPlayer;
 
     private EditText mSearchInput;
-    private ImageButton mBackButton;
-    private ImageButton mClearButton;
-    private ImageButton mMicButton;
+    private MaterialButton mBackButton;
+    private MaterialButton mClearButton;
+    private MaterialButton mMicButton;
     private RecyclerView mSuggestions;
     private SearchTagAdapter mTagAdapter;
     private RecyclerView mGrid;
