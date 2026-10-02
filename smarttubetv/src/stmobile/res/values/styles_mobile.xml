@@ -150,12 +150,12 @@
     </style>
 
     <!--
-      The sheet surface itself: our flat #1E1E1E (no elevation overlay) with the same top-only
-      16dp corners as bg_mobile_sheet, so the frame and the content it wraps line up exactly and
-      the colour runs under the gesture bar to the display edge.
+      The sheet surface itself follows the expressive high-container tone with the same top-only
+      28dp corners as bg_mobile_sheet, so the Material frame and custom content stay visually
+      continuous under the gesture bar.
     -->
     <style name="Widget.NewTube.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
-        <item name="backgroundTint">@color/mobile_color_surface</item>
+        <item name="backgroundTint">@color/mobile_m3_surface_container_high</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.NewTube.BottomSheet</item>
     </style>
 
