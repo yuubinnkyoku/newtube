@@ -174,8 +174,8 @@ public class MobileBrowseActivity extends MobileActivity
     private ImageView mErrorIcon;
     private TextView mErrorMessage;
     private MaterialButton mErrorAction;
-    private ImageButton mSearchButton;
-    private ImageButton mCastButton;
+    private MaterialButton mSearchButton;
+    private MaterialButton mCastButton;
     /** Process-wide cast session singleton; Browse only reads state + opens the picker. */
     private CastSessionManager mCastSessionManager;
 
@@ -512,8 +512,8 @@ public class MobileBrowseActivity extends MobileActivity
 
     @Override
     public int getMiniCardBottomOffsetPx() {
-        // The card floats above the 56dp Material bottom-nav row (see activity_mobile_browse.xml).
-        return Math.round(56 * getResources().getDisplayMetrics().density);
+        // M3 Expressive navigation bar uses a 64dp compact container.
+        return Math.round(64 * getResources().getDisplayMetrics().density);
     }
 
     /**
@@ -843,17 +843,19 @@ public class MobileBrowseActivity extends MobileActivity
         boolean connecting = mCastSessionManager != null && mCastSessionManager.isConnecting();
         if (connecting != mCastIconAnimating) {
             mCastIconAnimating = connecting;
-            mCastButton.setImageResource(connecting
+            mCastButton.setIconResource(connecting
                     ? R.drawable.ic_mobile_cast_connecting : R.drawable.ic_mobile_cast);
-            Drawable drawable = mCastButton.getDrawable();
+            Drawable drawable = mCastButton.getIcon();
             if (connecting && drawable instanceof AnimationDrawable) {
                 ((AnimationDrawable) drawable).start();
             }
         }
         if (mCastSessionManager != null && mCastSessionManager.isConnected()) {
-            mCastButton.setColorFilter(getColorInt(R.color.mobile_color_cast_active));
+            mCastButton.setIconTint(android.content.res.ColorStateList.valueOf(
+                    getColorInt(R.color.mobile_color_cast_active)));
         } else {
-            mCastButton.clearColorFilter();
+            mCastButton.setIconTint(android.content.res.ColorStateList.valueOf(
+                    getColorInt(R.color.mobile_color_on_surface)));
         }
     }
 
