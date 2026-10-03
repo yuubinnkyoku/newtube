@@ -377,6 +377,7 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="12dp"
         android:background="@drawable/bg_mobile_floating_nav"
+        android:clipToOutline="true"
         android:elevation="6dp"
         app:itemIconTint="@color/mobile_bottom_nav_item"
         app:itemTextColor="@color/mobile_bottom_nav_item"
