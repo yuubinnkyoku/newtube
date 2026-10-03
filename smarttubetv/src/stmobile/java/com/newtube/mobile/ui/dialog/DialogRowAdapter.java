@@ -352,6 +352,8 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     // Read-only - no click handling.
                     break;
             }
+        }
+
         private void applyGroupedShape(boolean first, boolean last) {
             if (!(itemView instanceof MaterialCardView)) {
                 return;
