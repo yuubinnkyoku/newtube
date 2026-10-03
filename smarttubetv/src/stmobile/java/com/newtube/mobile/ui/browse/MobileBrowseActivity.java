@@ -1203,7 +1203,7 @@ public class MobileBrowseActivity extends MobileActivity
     private void addYouGroupLabel(CharSequence text) {
         TextView label = new TextView(this);
         label.setText(text);
-        label.setTextColor(getColorInt(R.color.mobile_color_on_surface_secondary));
+        label.setTextColor(getColorInt(R.color.mobile_m3_primary));
         label.setTextSize(14);
         label.setTypeface(label.getTypeface(), android.graphics.Typeface.BOLD);
         int pad = Math.round(20 * getResources().getDisplayMetrics().density);
