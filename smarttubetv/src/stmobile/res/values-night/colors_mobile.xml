@@ -8,10 +8,10 @@
     <color name="mobile_m3_on_primary">#650019</color>
     <color name="mobile_m3_primary_container">#8F0027</color>
     <color name="mobile_m3_on_primary_container">#FFD9DF</color>
-    <color name="mobile_m3_secondary">#FFB1C1</color>
+    <color name="mobile_m3_secondary">#F2B8C6</color>
     <color name="mobile_m3_on_secondary">#65001F</color>
-    <color name="mobile_m3_secondary_container">#8A1535</color>
-    <color name="mobile_m3_on_secondary_container">#FFD9E1</color>
+    <color name="mobile_m3_secondary_container">#51202D</color>
+    <color name="mobile_m3_on_secondary_container">#FFD9E2</color>
     <color name="mobile_m3_tertiary">#98CBFF</color>
     <color name="mobile_m3_on_tertiary">#003353</color>
     <color name="mobile_m3_tertiary_container">#004A76</color>
