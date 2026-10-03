@@ -230,8 +230,8 @@ public class MobileBrowseActivity extends MobileActivity
 
     @Override
     protected boolean shouldInsetContentForNavigationBar() {
-        // BottomNavigationView paints through the gesture area and applies that inset internally.
-        return false;
+        // The M3E navigation surface now floats above the gesture area instead of painting through it.
+        return true;
     }
 
     @Override
@@ -513,8 +513,8 @@ public class MobileBrowseActivity extends MobileActivity
 
     @Override
     public int getMiniCardBottomOffsetPx() {
-        // M3 Expressive navigation bar uses a 64dp compact container.
-        return Math.round(64 * getResources().getDisplayMetrics().density);
+        // 64dp floating nav + 12dp breathing room above it.
+        return Math.round(76 * getResources().getDisplayMetrics().density);
     }
 
     /**
@@ -920,6 +920,7 @@ public class MobileBrowseActivity extends MobileActivity
         mBottomNav.setOnItemSelectedListener(item -> {
             if (!mSuppressNavCallback) {
                 Haptics.tick(mBottomNav);
+                animateBottomNavSelection(item.getItemId());
                 onNavItemChosen(item.getItemId());
             }
             return true;
@@ -931,11 +932,44 @@ public class MobileBrowseActivity extends MobileActivity
                 return;
             }
             Haptics.tick(mBottomNav);
+            View selected = mBottomNav.findViewById(item.getItemId());
+            Motion.tap(selected);
             if (item.getItemId() != YOU_ITEM_ID && mContentGrid != null
                     && mContentGrid.getVisibility() == View.VISIBLE && mContentGrid.canScrollVertically(-1)) {
                 smoothScrollGridToTop();
             } else {
                 onNavItemChosen(item.getItemId());
+            }
+        });
+    }
+
+    /**
+     * VIVI-style selection response: the selected destination lifts and grows a little while
+     * the others settle back. Label expansion is handled by BottomNavigationView's selected-only
+     * label mode; this adds the spatial spring M3E needs to feel continuous rather than binary.
+     */
+    private void animateBottomNavSelection(int selectedId) {
+        mBottomNav.post(() -> {
+            android.view.Menu menu = mBottomNav.getMenu();
+            for (int i = 0; i < menu.size(); i++) {
+                int id = menu.getItem(i).getItemId();
+                View itemView = mBottomNav.findViewById(id);
+                if (itemView == null) {
+                    continue;
+                }
+                boolean selected = id == selectedId;
+                float targetScale = selected ? 1.05f : 1f;
+                float targetY = selected ? -getResources().getDisplayMetrics().density : 0f;
+
+                Motion.Spring spring = new Motion.Spring(0f, 1f, 0f, 430f, 0.72f, 0.001f);
+                itemView.animate().cancel();
+                itemView.animate()
+                        .scaleX(targetScale)
+                        .scaleY(targetScale)
+                        .translationY(targetY)
+                        .setDuration(Math.max(180L, spring.durationMs))
+                        .setInterpolator(spring)
+                        .start();
             }
         });
     }
