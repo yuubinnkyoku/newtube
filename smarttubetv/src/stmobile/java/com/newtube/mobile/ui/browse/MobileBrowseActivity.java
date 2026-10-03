@@ -1105,27 +1105,34 @@ public class MobileBrowseActivity extends MobileActivity
             (isPersonalSection(section.getId()) ? personal : explore).add(section);
         }
 
+        int personalStart = mYouRows.getChildCount();
         for (BrowseSection section : personal) {
             addYouSectionRow(section);
         }
+        styleYouGroup(personalStart, mYouRows.getChildCount());
 
         if (!pinned.isEmpty()) {
             addYouGroupLabel(getString(R.string.mobile_you_pinned));
+            int pinnedStart = mYouRows.getChildCount();
             for (BrowseSection section : pinned) {
                 addYouSectionRow(section);
             }
+            styleYouGroup(pinnedStart, mYouRows.getChildCount());
         }
 
         if (!explore.isEmpty()) {
             addYouGroupLabel(getString(R.string.mobile_you_explore));
+            int exploreStart = mYouRows.getChildCount();
             for (BrowseSection section : explore) {
                 addYouSectionRow(section);
             }
+            styleYouGroup(exploreStart, mYouRows.getChildCount());
         }
 
         addYouDivider();
-        addYouRow(R.drawable.ic_mobile_settings, getString(R.string.header_settings),
+        View settingsRow = addYouRow(R.drawable.ic_mobile_settings, getString(R.string.header_settings),
                 this::openSettings);
+        settingsRow.setBackgroundResource(R.drawable.bg_mobile_group_single);
     }
 
     private void addYouSectionRow(BrowseSection section) {
@@ -1137,11 +1144,37 @@ public class MobileBrowseActivity extends MobileActivity
             onYouPanelToggled(); // now that the chosen section is current: its name in the top bar
         });
         row.setOnLongClickListener(v -> {
+            Haptics.longPress(v);
             if (mPresenter != null) {
                 mPresenter.onSectionLongPressed(sectionId);
             }
             return true;
         });
+    }
+
+    /**
+     * Connected M3 list geometry, matching VIVI's leading/middle/end rhythm instead of giving
+     * every item a separate large-radius card.
+     */
+    private void styleYouGroup(int startInclusive, int endExclusive) {
+        int count = endExclusive - startInclusive;
+        if (count <= 0) {
+            return;
+        }
+        for (int i = 0; i < count; i++) {
+            View row = mYouRows.getChildAt(startInclusive + i);
+            int background;
+            if (count == 1) {
+                background = R.drawable.bg_mobile_group_single;
+            } else if (i == 0) {
+                background = R.drawable.bg_mobile_group_first;
+            } else if (i == count - 1) {
+                background = R.drawable.bg_mobile_group_last;
+            } else {
+                background = R.drawable.bg_mobile_group_middle;
+            }
+            row.setBackgroundResource(background);
+        }
     }
 
     /** Small secondary-color group label, official-You-page style. */
@@ -1272,7 +1305,11 @@ public class MobileBrowseActivity extends MobileActivity
         TextView label = row.findViewById(R.id.mobile_you_row_label);
         label.setText(title);
 
-        row.setOnClickListener(v -> action.run());
+        row.setOnClickListener(v -> {
+            Haptics.click(v);
+            Motion.tap(v);
+            action.run();
+        });
         mYouRows.addView(row);
         return row;
     }
