@@ -372,7 +372,5 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .build();
             ((MaterialCardView) itemView).setShapeAppearanceModel(shape);
         }
-
-        }
     }
 }
