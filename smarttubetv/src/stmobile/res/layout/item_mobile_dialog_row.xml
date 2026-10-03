@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  M3 Expressive settings / option row. The root stays a single clickable View for
-  DialogRowAdapter, but uses a rounded tonal MaterialCardView so selection controls sit in
-  distinct, touch-friendly containers rather than a flat preference list.
+  Material 3 settings row. Horizontal width belongs to the RecyclerView, not individual rows,
+  so every card has exactly the same left/right edge. The trailing 72dp control slot is fixed
+  across buttons, switches, radio and checkbox rows to keep labels on one grid.
 -->
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -11,39 +11,40 @@
     android:id="@+id/dialog_row_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginVertical="2dp"
+    android:layout_marginVertical="4dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/mobile_m3_surface_container_low"
     app:cardCornerRadius="20dp"
     app:cardElevation="0dp"
+    app:rippleColor="@color/mobile_m3_outline_variant"
     app:strokeColor="@android:color/transparent"
-    app:strokeWidth="0dp"
-    app:rippleColor="@color/mobile_m3_outline_variant">
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:minHeight="64dp"
+        android:minHeight="72dp"
         android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="12dp">
+        android:paddingStart="20dp"
+        android:paddingEnd="8dp">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp">
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp">
 
             <TextView
                 android:id="@+id/dialog_row_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:textColor="@color/mobile_color_on_surface"
                 android:textSize="16sp"
                 tools:text="Option title" />
@@ -52,7 +53,9 @@
                 android:id="@+id/dialog_row_subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="3"
                 android:textColor="@color/mobile_m3_on_surface_variant"
                 android:textSize="13sp"
                 android:visibility="gone"
@@ -63,32 +66,46 @@
 
         <FrameLayout
             android:id="@+id/dialog_row_control"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
             android:layout_marginStart="12dp">
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/dialog_row_radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:clickable="false"
                 android:focusable="false"
                 android:visibility="gone" />
 
-            <CheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/dialog_row_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:clickable="false"
                 android:focusable="false"
                 android:visibility="gone" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/dialog_row_switch"
+                style="?attr/materialSwitchStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:clickable="false"
                 android:focusable="false"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/dialog_row_chevron"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/mobile_m3_on_surface_variant"
                 android:visibility="gone" />
 
         </FrameLayout>
