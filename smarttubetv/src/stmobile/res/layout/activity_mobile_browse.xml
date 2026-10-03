@@ -81,6 +81,7 @@
         app:icon="@drawable/ic_mobile_search"
         app:iconSize="24dp"
         app:iconTint="@color/mobile_m3_on_secondary_container"
+        app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall"
         app:layout_constraintBottom_toBottomOf="@id/mobile_title_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/mobile_title_bar" />
@@ -288,6 +289,8 @@
         app:cardBackgroundColor="@android:color/black"
         app:cardCornerRadius="20dp"
         app:cardElevation="8dp"
+        app:strokeColor="@android:color/transparent"
+        app:strokeWidth="0dp"
         app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         tools:visibility="visible">
