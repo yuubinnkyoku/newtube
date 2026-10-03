@@ -149,6 +149,9 @@
     <!-- Fallback tab label for a channel section the API delivered without a title. -->
     <string name="mobile_channel_tab_videos">Videos</string>
 
+    <!-- Local app-module override so locale-specific stmobile resources can translate Downloads. -->
+    <string name="header_downloads">Downloads</string>
+
     <!-- Bottom-nav "You" tab (account + extra sections + settings) -->
     <string name="mobile_nav_you">You</string>
     <!-- You-tab group label over the discovery feeds (Music, Gaming, News, ...). -->
