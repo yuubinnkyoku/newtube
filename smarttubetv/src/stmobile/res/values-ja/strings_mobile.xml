@@ -6,6 +6,7 @@
     <string name="mobile_you_explore">見つける</string>
     <string name="mobile_you_pinned">固定</string>
     <string name="header_downloads">ダウンロード</string>
+    <string name="header_live">ライブ</string>
 
     <string name="mobile_update_row_available">アップデートがあります</string>
     <string name="mobile_update_row_downloading">アップデートをダウンロード中</string>
