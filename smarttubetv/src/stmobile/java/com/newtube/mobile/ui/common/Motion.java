@@ -57,6 +57,30 @@ public final class Motion {
     }
 
     /**
+     * Expressive pressed response for list/card actions: compress a hair, then settle back.
+     * Kept deliberately subtler than {@link #pop}: this accompanies a normal setting/navigation
+     * action rather than celebrating a like.
+     */
+    public static void tap(android.view.View view) {
+        if (view == null) {
+            return;
+        }
+        view.animate().cancel();
+        view.animate()
+                .scaleX(0.985f)
+                .scaleY(0.985f)
+                .setDuration(55)
+                .setInterpolator(STANDARD_ACCELERATE)
+                .withEndAction(() -> view.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(180)
+                        .setInterpolator(EMPHASIZED_DECELERATE)
+                        .start())
+                .start();
+    }
+
+    /**
      * NEWTUBE(haptics): a damped spring from one value to another, solved in closed form and played
      * as an interpolator, so an ordinary ValueAnimator runs it (its cancel and end handling stay as
      * they are). This is how the Pixel settles what a finger lets go of - the launcher's recents

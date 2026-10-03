@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Closing screen fades away, revealing the screen beneath (in-task close transition). -->
+<!-- Page close: inverse shared-axis cue, short enough to keep Back immediate. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:interpolator="@android:anim/accelerate_interpolator">
+    android:interpolator="@interpolator/m3e_emphasized_accelerate">
     <alpha
         android:fromAlpha="1.0"
         android:toAlpha="0.0"
-        android:duration="160" />
+        android:duration="180" />
+    <translate
+        android:fromXDelta="0%p"
+        android:toXDelta="1.5%p"
+        android:duration="190" />
+    <scale
+        android:fromXScale="1.0"
+        android:toXScale="0.99"
+        android:fromYScale="1.0"
+        android:toYScale="0.99"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="190" />
 </set>

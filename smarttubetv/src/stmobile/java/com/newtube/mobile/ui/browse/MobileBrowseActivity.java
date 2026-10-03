@@ -70,6 +70,7 @@ import com.newtube.mobile.casting.CastVolumeKeys;
 import com.newtube.mobile.ui.common.FeedCache;
 import com.newtube.mobile.ui.common.FeedSwapWarmup;
 import com.newtube.mobile.ui.common.FrameGate;
+import com.newtube.mobile.ui.common.Haptics;
 import com.newtube.mobile.ui.common.MobileActivity;
 import com.newtube.mobile.ui.common.MobileSnackbar;
 import com.newtube.mobile.ui.common.Motion;
@@ -174,8 +175,8 @@ public class MobileBrowseActivity extends MobileActivity
     private ImageView mErrorIcon;
     private TextView mErrorMessage;
     private MaterialButton mErrorAction;
-    private ImageButton mSearchButton;
-    private ImageButton mCastButton;
+    private MaterialButton mSearchButton;
+    private MaterialButton mCastButton;
     /** Process-wide cast session singleton; Browse only reads state + opens the picker. */
     private CastSessionManager mCastSessionManager;
 
@@ -229,8 +230,8 @@ public class MobileBrowseActivity extends MobileActivity
 
     @Override
     protected boolean shouldInsetContentForNavigationBar() {
-        // BottomNavigationView paints through the gesture area and applies that inset internally.
-        return false;
+        // The M3E navigation surface now floats above the gesture area instead of painting through it.
+        return true;
     }
 
     @Override
@@ -512,8 +513,8 @@ public class MobileBrowseActivity extends MobileActivity
 
     @Override
     public int getMiniCardBottomOffsetPx() {
-        // The card floats above the 56dp Material bottom-nav row (see activity_mobile_browse.xml).
-        return Math.round(56 * getResources().getDisplayMetrics().density);
+        // 64dp floating nav + 12dp breathing room above it.
+        return Math.round(76 * getResources().getDisplayMetrics().density);
     }
 
     /**
@@ -843,17 +844,19 @@ public class MobileBrowseActivity extends MobileActivity
         boolean connecting = mCastSessionManager != null && mCastSessionManager.isConnecting();
         if (connecting != mCastIconAnimating) {
             mCastIconAnimating = connecting;
-            mCastButton.setImageResource(connecting
+            mCastButton.setIconResource(connecting
                     ? R.drawable.ic_mobile_cast_connecting : R.drawable.ic_mobile_cast);
-            Drawable drawable = mCastButton.getDrawable();
+            Drawable drawable = mCastButton.getIcon();
             if (connecting && drawable instanceof AnimationDrawable) {
                 ((AnimationDrawable) drawable).start();
             }
         }
         if (mCastSessionManager != null && mCastSessionManager.isConnected()) {
-            mCastButton.setColorFilter(getColorInt(R.color.mobile_color_cast_active));
+            mCastButton.setIconTint(android.content.res.ColorStateList.valueOf(
+                    getColorInt(R.color.mobile_color_cast_active)));
         } else {
-            mCastButton.clearColorFilter();
+            mCastButton.setIconTint(android.content.res.ColorStateList.valueOf(
+                    getColorInt(R.color.mobile_color_on_surface)));
         }
     }
 
@@ -916,6 +919,7 @@ public class MobileBrowseActivity extends MobileActivity
     private void setupBottomNav() {
         mBottomNav.setOnItemSelectedListener(item -> {
             if (!mSuppressNavCallback) {
+                Haptics.tick(mBottomNav);
                 onNavItemChosen(item.getItemId());
             }
             return true;
@@ -926,6 +930,9 @@ public class MobileBrowseActivity extends MobileActivity
             if (mSuppressNavCallback) {
                 return;
             }
+            Haptics.tick(mBottomNav);
+            View selected = mBottomNav.findViewById(item.getItemId());
+            Motion.tap(selected);
             if (item.getItemId() != YOU_ITEM_ID && mContentGrid != null
                     && mContentGrid.getVisibility() == View.VISIBLE && mContentGrid.canScrollVertically(-1)) {
                 smoothScrollGridToTop();
@@ -1066,27 +1073,34 @@ public class MobileBrowseActivity extends MobileActivity
             (isPersonalSection(section.getId()) ? personal : explore).add(section);
         }
 
+        int personalStart = mYouRows.getChildCount();
         for (BrowseSection section : personal) {
             addYouSectionRow(section);
         }
+        styleYouGroup(personalStart, mYouRows.getChildCount());
 
         if (!pinned.isEmpty()) {
             addYouGroupLabel(getString(R.string.mobile_you_pinned));
+            int pinnedStart = mYouRows.getChildCount();
             for (BrowseSection section : pinned) {
                 addYouSectionRow(section);
             }
+            styleYouGroup(pinnedStart, mYouRows.getChildCount());
         }
 
         if (!explore.isEmpty()) {
             addYouGroupLabel(getString(R.string.mobile_you_explore));
+            int exploreStart = mYouRows.getChildCount();
             for (BrowseSection section : explore) {
                 addYouSectionRow(section);
             }
+            styleYouGroup(exploreStart, mYouRows.getChildCount());
         }
 
         addYouDivider();
-        addYouRow(R.drawable.ic_mobile_settings, getString(R.string.header_settings),
+        View settingsRow = addYouRow(R.drawable.ic_mobile_settings, getString(R.string.header_settings),
                 this::openSettings);
+        settingsRow.setBackgroundResource(R.drawable.bg_mobile_group_single);
     }
 
     private void addYouSectionRow(BrowseSection section) {
@@ -1098,11 +1112,37 @@ public class MobileBrowseActivity extends MobileActivity
             onYouPanelToggled(); // now that the chosen section is current: its name in the top bar
         });
         row.setOnLongClickListener(v -> {
+            Haptics.longPress(v);
             if (mPresenter != null) {
                 mPresenter.onSectionLongPressed(sectionId);
             }
             return true;
         });
+    }
+
+    /**
+     * Connected M3 list geometry, matching VIVI's leading/middle/end rhythm instead of giving
+     * every item a separate large-radius card.
+     */
+    private void styleYouGroup(int startInclusive, int endExclusive) {
+        int count = endExclusive - startInclusive;
+        if (count <= 0) {
+            return;
+        }
+        for (int i = 0; i < count; i++) {
+            View row = mYouRows.getChildAt(startInclusive + i);
+            int background;
+            if (count == 1) {
+                background = R.drawable.bg_mobile_group_single;
+            } else if (i == 0) {
+                background = R.drawable.bg_mobile_group_first;
+            } else if (i == count - 1) {
+                background = R.drawable.bg_mobile_group_last;
+            } else {
+                background = R.drawable.bg_mobile_group_middle;
+            }
+            row.setBackgroundResource(background);
+        }
     }
 
     /** Small secondary-color group label, official-You-page style. */
@@ -1201,7 +1241,7 @@ public class MobileBrowseActivity extends MobileActivity
     private void addYouGroupLabel(CharSequence text) {
         TextView label = new TextView(this);
         label.setText(text);
-        label.setTextColor(getColorInt(R.color.mobile_color_on_surface_secondary));
+        label.setTextColor(getColorInt(R.color.mobile_m3_primary));
         label.setTextSize(14);
         label.setTypeface(label.getTypeface(), android.graphics.Typeface.BOLD);
         int pad = Math.round(20 * getResources().getDisplayMetrics().density);
@@ -1233,7 +1273,11 @@ public class MobileBrowseActivity extends MobileActivity
         TextView label = row.findViewById(R.id.mobile_you_row_label);
         label.setText(title);
 
-        row.setOnClickListener(v -> action.run());
+        row.setOnClickListener(v -> {
+            Haptics.click(v);
+            Motion.tap(v);
+            action.run();
+        });
         mYouRows.addView(row);
         return row;
     }

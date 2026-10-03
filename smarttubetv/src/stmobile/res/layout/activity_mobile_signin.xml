@@ -302,8 +302,10 @@
                     android:clickable="true"
                     android:focusable="true"
                     app:cardBackgroundColor="@color/mobile_color_placeholder"
-                    app:cardCornerRadius="8dp"
+                    app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
+                    app:strokeColor="@android:color/transparent"
+                    app:strokeWidth="0dp"
                     app:rippleColor="@color/mobile_color_on_surface_secondary">
 
                     <TextView
@@ -343,8 +345,7 @@
                     android:layout_marginTop="28dp"
                     android:minHeight="56dp"
                     android:text="@string/mobile_signin_open_button"
-                    android:textSize="16sp"
-                    app:cornerRadius="24dp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/mobile_signin_manual_hint"
@@ -430,6 +431,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/mobile_signin_reopen_button"
+                    style="?attr/materialButtonTonalStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="28dp"
@@ -438,8 +440,7 @@
                     android:text="@string/mobile_signin_reopen_button"
                     android:textColor="@color/mobile_color_on_surface"
                     android:textSize="15sp"
-                    app:backgroundTint="@color/mobile_color_placeholder"
-                    app:cornerRadius="24dp" />
+                    app:backgroundTint="@color/mobile_color_placeholder" />
 
             </LinearLayout>
 

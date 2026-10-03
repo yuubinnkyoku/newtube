@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -24,12 +23,15 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+
 import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionCategory;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionItem;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.AppDialogPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.views.AppDialogView;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.newtube.mobile.ui.common.Haptics;
 import com.newtube.mobile.ui.common.MobileActivity;
 import com.newtube.mobile.ui.common.Motion;
 
@@ -126,7 +128,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     private View mHandle;
     private MaxHeightRecyclerView mRecyclerView;
     private TextView mTitleView;
-    private ImageButton mBackButton;
+    private MaterialButton mBackButton;
     private DialogRowAdapter mAdapter;
 
     /** true = full-screen settings surface; false (default) = bottom sheet overlay. */
@@ -253,7 +255,10 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
         mBackButton = findViewById(R.id.mobile_dialog_back);
 
         // Sheet mode: tapping the dim scrim dismisses the whole dialog (like a Material sheet).
-        mScrim.setOnClickListener(v -> dismissSheet());
+        mScrim.setOnClickListener(v -> {
+            Haptics.click(v);
+            dismissSheet();
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(mRoot, (view, windowInsets) -> {
             mSystemInsets = windowInsets.getInsets(
@@ -361,6 +366,16 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     private static final int SCROLL_RESTORE = 2;
 
     private void renderTopLevel(int scroll) {
+        renderTopLevel(scroll, 0);
+    }
+
+    /**
+     * Render one settings/dialog level. direction: +1 pushes deeper, -1 returns, 0 is an in-place
+     * state refresh. Push/pop uses a compact Material shared-axis gesture: the new content comes
+     * from the navigation direction, fades through and settles with the same under-damped spring
+     * family used elsewhere in the touch UI.
+     */
+    private void renderTopLevel(int scroll, int direction) {
         if (mLevels.isEmpty()) {
             return;
         }
@@ -372,12 +387,12 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
         // closes Settings). A root-level bottom sheet has no back arrow - the scrim/back dismiss it.
         boolean showBack = canGoBack() || mFullScreen;
         mBackButton.setVisibility(showBack ? View.VISIBLE : View.GONE);
-        // NEWTUBE(sheet-title): without the arrow the title sat 4dp from the edge while every row
-        // starts at 16dp; line it up with the rows. Beside the arrow, 4dp keeps the usual gap.
+        // Rows own a 12dp list inset; title aligns to their 20dp internal text inset.
         mTitleView.setPaddingRelative(
                 getResources().getDimensionPixelSize(showBack
                         ? R.dimen.mobile_dialog_title_inset_with_back : R.dimen.mobile_dialog_title_inset),
                 mTitleView.getPaddingTop(), mTitleView.getPaddingEnd(), mTitleView.getPaddingBottom());
+
         mAdapter.submit(level.categories, mRadioOverrides);
         RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
         if (scroll == SCROLL_RESTORE && level.listState != null && layoutManager != null) {
@@ -385,6 +400,77 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
         } else if (scroll != SCROLL_KEEP) {
             mRecyclerView.scrollToPosition(0);
         }
+
+        if (direction != 0) {
+            animateLevelTransition(direction);
+        }
+    }
+
+    private void animateLevelTransition(int direction) {
+        float density = getResources().getDisplayMetrics().density;
+        float listOffset = 28f * density * direction;
+        float titleOffset = 14f * density * direction;
+
+        Motion.Spring spring = new Motion.Spring(0f, 1f, 0f, 700f, 0.9f, 0.001f);
+        long duration = Math.max(180L, spring.durationMs);
+
+        mRecyclerView.animate().cancel();
+        mRecyclerView.setTranslationX(listOffset);
+        mRecyclerView.setAlpha(0.58f);
+        mRecyclerView.animate()
+                .translationX(0f)
+                .alpha(1f)
+                .setDuration(duration)
+                .setInterpolator(spring)
+                .start();
+
+        mTitleView.animate().cancel();
+        mTitleView.setTranslationX(titleOffset);
+        mTitleView.setAlpha(0.72f);
+        mTitleView.animate()
+                .translationX(0f)
+                .alpha(1f)
+                .setDuration(Math.min(duration, 280L))
+                .setInterpolator(Motion.EMPHASIZED_DECELERATE)
+                .start();
+    }
+
+    private void animateFullScreenEntrance() {
+        float density = getResources().getDisplayMetrics().density;
+        float offset = 18f * density;
+
+        Motion.Spring spring = new Motion.Spring(0f, 1f, 0f, 700f, 0.9f, 0.001f);
+        long duration = Math.max(200L, spring.durationMs);
+
+        mRecyclerView.animate().cancel();
+        mRecyclerView.setTranslationY(offset);
+        mRecyclerView.setAlpha(0f);
+        mRecyclerView.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setDuration(duration)
+                .setInterpolator(spring)
+                .start();
+
+        mTitleView.animate().cancel();
+        mTitleView.setTranslationY(offset * 0.55f);
+        mTitleView.setAlpha(0f);
+        mTitleView.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setStartDelay(35)
+                .setDuration(220)
+                .setInterpolator(Motion.EMPHASIZED_DECELERATE)
+                .start();
+
+        mBackButton.animate().cancel();
+        mBackButton.setAlpha(0f);
+        mBackButton.animate()
+                .alpha(1f)
+                .setStartDelay(55)
+                .setDuration(180)
+                .setInterpolator(Motion.STANDARD_DECELERATE)
+                .start();
     }
 
     /**
@@ -597,6 +683,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
     }
 
     private void handleBack() {
+        Haptics.click(mContent);
         if (canGoBack()) {
             goBack();
         } else {
@@ -660,7 +747,10 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
                 mLevels.get(mLevels.size() - 1).listState = mRecyclerView.getLayoutManager().onSaveInstanceState();
             }
             mLevels.add(new DialogLevel(categories, title));
-            renderTopLevel(SCROLL_TOP);
+            renderTopLevel(SCROLL_TOP, stackWasEmpty ? 0 : 1);
+            if (stackWasEmpty && mFullScreen) {
+                animateFullScreenEntrance();
+            }
         });
     }
 
@@ -685,7 +775,7 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
         runOnUiThread(() -> {
             if (canGoBack()) {
                 mLevels.remove(mLevels.size() - 1);
-                renderTopLevel(SCROLL_RESTORE);
+                renderTopLevel(SCROLL_RESTORE, -1);
             } else {
                 finish();
             }

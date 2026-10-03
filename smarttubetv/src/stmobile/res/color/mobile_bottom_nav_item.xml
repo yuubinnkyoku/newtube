@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-     Bottom-nav icon/label tint: white in BOTH states, like the YouTube app.
-     The active tab is signaled by the outline->filled icon swap (ic_nav_* state
-     lists), not by dimming the inactive items.
--->
+<!-- Material 3 Expressive navigation tint: selected destinations use the secondary role
+     against the large tonal active indicator; inactive destinations recede to on-surface-variant. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/mobile_color_on_surface" />
+    <item android:state_checked="true" android:color="@color/mobile_m3_secondary" />
+    <item android:color="@color/mobile_m3_on_surface_variant" />
 </selector>

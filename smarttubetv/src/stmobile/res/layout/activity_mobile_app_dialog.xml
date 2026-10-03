@@ -17,6 +17,7 @@
       the window with an opaque background.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_dialog_root"
     android:layout_width="match_parent"
@@ -36,7 +37,7 @@
         android:id="@+id/mobile_dialog_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/mobile_color_background"
+        android:background="@color/mobile_m3_surface_container_lowest"
         android:orientation="vertical">
 
         <View
@@ -55,15 +56,15 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/mobile_dialog_back"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/mobile_dialog_back"
-                android:padding="12dp"
-                android:src="@drawable/ic_mobile_back_arrow" />
+                app:icon="@drawable/ic_mobile_back_arrow"
+                app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
 
             <TextView
                 android:id="@+id/mobile_dialog_title"
@@ -87,6 +88,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
+            android:paddingHorizontal="12dp"
+            android:paddingBottom="12dp"
             android:scrollbars="vertical"
             tools:listitem="@layout/item_mobile_dialog_row" />
 
