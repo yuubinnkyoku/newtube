@@ -1,6 +1,7 @@
 package com.newtube.mobile.ui.dialog;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -358,9 +359,14 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (!(itemView instanceof MaterialCardView)) {
                 return;
             }
-            float density = itemView.getResources().getDisplayMetrics().density;
-            float outer = 20f * density;
-            float connected = 4f * density;
+
+            // Use the M3 shape scale rather than baking dp values into the component.
+            // In the expressive theme these currently resolve to 20dp (Large Increased)
+            // and 4dp (Extra Small), and keep following the library if the token set evolves.
+            float outer = resolveShapeSize(
+                    com.google.android.material.R.attr.shapeCornerSizeLargeIncreased, 20f);
+            float connected = resolveShapeSize(
+                    com.google.android.material.R.attr.shapeCornerSizeExtraSmall, 4f);
             float top = first ? outer : connected;
             float bottom = last ? outer : connected;
 
@@ -371,6 +377,16 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .setBottomRightCornerSize(bottom)
                     .build();
             ((MaterialCardView) itemView).setShapeAppearanceModel(shape);
+        }
+
+        private float resolveShapeSize(int attr, float fallbackDp) {
+            TypedValue value = new TypedValue();
+            if (itemView.getContext().getTheme().resolveAttribute(attr, value, true)
+                    && value.type == TypedValue.TYPE_DIMENSION) {
+                return TypedValue.complexToDimension(
+                        value.data, itemView.getResources().getDisplayMetrics());
+            }
+            return fallbackDp * itemView.getResources().getDisplayMetrics().density;
         }
     }
 }
