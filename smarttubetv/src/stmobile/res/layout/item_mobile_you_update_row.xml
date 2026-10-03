@@ -5,13 +5,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="1dp"
+    android:background="@drawable/bg_mobile_m3e_list_row"
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
-    android:minHeight="64dp"
+    android:minHeight="56dp"
     android:orientation="horizontal"
-    android:paddingHorizontal="20dp"
+    android:paddingHorizontal="18dp"
     android:paddingVertical="8dp">
 
     <ImageView
@@ -20,12 +22,12 @@
         android:contentDescription="@null"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_mobile_update"
-        app:tint="@color/mobile_color_on_surface" />
+        app:tint="@color/mobile_m3_primary" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="16dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
