@@ -33,17 +33,14 @@
         android:orientation="horizontal"
         android:paddingHorizontal="4dp">
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/mobile_search_back"
             style="?attr/materialIconButtonStyle"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:contentDescription="@string/mobile_back"
-            android:minWidth="48dp"
-            android:text=""
             app:icon="@drawable/ic_mobile_back_arrow"
-            app:iconSize="24dp"
-            app:iconTint="@color/mobile_color_on_surface" />
+            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
 
         <EditText
             android:id="@+id/mobile_search_input"
@@ -64,31 +61,25 @@
             android:textSize="16sp" />
 
         <!-- Clear the query; visible only while the field has text. -->
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/mobile_search_clear"
             style="?attr/materialIconButtonStyle"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:contentDescription="@string/mobile_search_clear"
-            android:minWidth="48dp"
-            android:text=""
             android:visibility="gone"
             app:icon="@drawable/ic_sheet_close"
-            app:iconSize="24dp"
-            app:iconTint="@color/mobile_color_on_surface"
+            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall"
             tools:visibility="visible" />
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/mobile_search_mic"
             style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:contentDescription="@string/mobile_search_voice"
-            android:minWidth="48dp"
-            android:text=""
             app:backgroundTint="@color/mobile_m3_surface_container_high"
             app:icon="@drawable/ic_mobile_mic"
-            app:iconSize="24dp"
             app:iconTint="@color/mobile_color_on_surface"
             app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
 
