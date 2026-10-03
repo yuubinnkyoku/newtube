@@ -70,6 +70,7 @@ import com.newtube.mobile.casting.CastVolumeKeys;
 import com.newtube.mobile.ui.common.FeedCache;
 import com.newtube.mobile.ui.common.FeedSwapWarmup;
 import com.newtube.mobile.ui.common.FrameGate;
+import com.newtube.mobile.ui.common.Haptics;
 import com.newtube.mobile.ui.common.MobileActivity;
 import com.newtube.mobile.ui.common.MobileSnackbar;
 import com.newtube.mobile.ui.common.Motion;
@@ -918,6 +919,7 @@ public class MobileBrowseActivity extends MobileActivity
     private void setupBottomNav() {
         mBottomNav.setOnItemSelectedListener(item -> {
             if (!mSuppressNavCallback) {
+                Haptics.tick(mBottomNav);
                 onNavItemChosen(item.getItemId());
             }
             return true;
@@ -928,6 +930,7 @@ public class MobileBrowseActivity extends MobileActivity
             if (mSuppressNavCallback) {
                 return;
             }
+            Haptics.tick(mBottomNav);
             if (item.getItemId() != YOU_ITEM_ID && mContentGrid != null
                     && mContentGrid.getVisibility() == View.VISIBLE && mContentGrid.canScrollVertically(-1)) {
                 smoothScrollGridToTop();
