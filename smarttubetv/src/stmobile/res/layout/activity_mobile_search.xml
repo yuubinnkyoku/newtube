@@ -88,7 +88,8 @@
             android:text=""
             app:icon="@drawable/ic_mobile_mic"
             app:iconSize="24dp"
-            app:iconTint="@color/mobile_m3_on_secondary_container" />
+            app:iconTint="@color/mobile_m3_on_secondary_container"
+            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
 
     </LinearLayout>
 
