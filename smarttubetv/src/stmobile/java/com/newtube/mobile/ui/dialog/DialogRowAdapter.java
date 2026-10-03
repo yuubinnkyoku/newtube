@@ -309,25 +309,6 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemView.setFocusable(clickable);
             title.setAlpha(row.viewType == TYPE_TEXT ? 0.85f : 1f);
 
-        private void applyGroupedShape(boolean first, boolean last) {
-            if (!(itemView instanceof MaterialCardView)) {
-                return;
-            }
-            float density = itemView.getResources().getDisplayMetrics().density;
-            float outer = 20f * density;
-            float connected = 4f * density;
-            float top = first ? outer : connected;
-            float bottom = last ? outer : connected;
-
-            ShapeAppearanceModel shape = new ShapeAppearanceModel.Builder()
-                    .setTopLeftCornerSize(top)
-                    .setTopRightCornerSize(top)
-                    .setBottomLeftCornerSize(bottom)
-                    .setBottomRightCornerSize(bottom)
-                    .build();
-            ((MaterialCardView) itemView).setShapeAppearanceModel(shape);
-        }
-
             switch (row.viewType) {
                 case TYPE_BUTTON:
                     chevron.setVisibility(View.VISIBLE);
@@ -371,6 +352,25 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     // Read-only - no click handling.
                     break;
             }
+        private void applyGroupedShape(boolean first, boolean last) {
+            if (!(itemView instanceof MaterialCardView)) {
+                return;
+            }
+            float density = itemView.getResources().getDisplayMetrics().density;
+            float outer = 20f * density;
+            float connected = 4f * density;
+            float top = first ? outer : connected;
+            float bottom = last ? outer : connected;
+
+            ShapeAppearanceModel shape = new ShapeAppearanceModel.Builder()
+                    .setTopLeftCornerSize(top)
+                    .setTopRightCornerSize(top)
+                    .setBottomLeftCornerSize(bottom)
+                    .setBottomRightCornerSize(bottom)
+                    .build();
+            ((MaterialCardView) itemView).setShapeAppearanceModel(shape);
+        }
+
         }
     }
 }
