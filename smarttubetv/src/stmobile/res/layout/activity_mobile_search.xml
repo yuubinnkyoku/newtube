@@ -86,9 +86,10 @@
             android:contentDescription="@string/mobile_search_voice"
             android:minWidth="48dp"
             android:text=""
+            app:backgroundTint="@color/mobile_m3_surface_container_high"
             app:icon="@drawable/ic_mobile_mic"
             app:iconSize="24dp"
-            app:iconTint="@color/mobile_m3_on_secondary_container"
+            app:iconTint="@color/mobile_color_on_surface"
             app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
 
     </LinearLayout>
