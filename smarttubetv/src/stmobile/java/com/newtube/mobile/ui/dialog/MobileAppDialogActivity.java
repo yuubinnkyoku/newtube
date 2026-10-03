@@ -435,6 +435,44 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
                 .start();
     }
 
+    private void animateFullScreenEntrance() {
+        float density = getResources().getDisplayMetrics().density;
+        float offset = 18f * density;
+
+        Motion.Spring spring = new Motion.Spring(0f, 1f, 0f, 700f, 0.9f, 0.001f);
+        long duration = Math.max(200L, spring.durationMs);
+
+        mRecyclerView.animate().cancel();
+        mRecyclerView.setTranslationY(offset);
+        mRecyclerView.setAlpha(0f);
+        mRecyclerView.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setDuration(duration)
+                .setInterpolator(spring)
+                .start();
+
+        mTitleView.animate().cancel();
+        mTitleView.setTranslationY(offset * 0.55f);
+        mTitleView.setAlpha(0f);
+        mTitleView.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setStartDelay(35)
+                .setDuration(220)
+                .setInterpolator(Motion.EMPHASIZED_DECELERATE)
+                .start();
+
+        mBackButton.animate().cancel();
+        mBackButton.setAlpha(0f);
+        mBackButton.animate()
+                .alpha(1f)
+                .setStartDelay(55)
+                .setDuration(180)
+                .setInterpolator(Motion.STANDARD_DECELERATE)
+                .start();
+    }
+
     /**
      * Choose the presentation once, on the first {@link #show}. FULL-SCREEN only for the Settings
      * tree (tagged with {@link #ID_FULLSCREEN_SETTINGS}); everything else - context menus, the player
@@ -710,6 +748,9 @@ public class MobileAppDialogActivity extends MobileActivity implements AppDialog
             }
             mLevels.add(new DialogLevel(categories, title));
             renderTopLevel(SCROLL_TOP, stackWasEmpty ? 0 : 1);
+            if (stackWasEmpty && mFullScreen) {
+                animateFullScreenEntrance();
+            }
         });
     }
 
