@@ -59,15 +59,12 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/mobile_dialog_back"
                 style="?attr/materialIconButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:contentDescription="@string/mobile_dialog_back"
-                android:minWidth="48dp"
-                android:text=""
                 app:icon="@drawable/ic_mobile_back_arrow"
-                app:iconSize="24dp"
-                app:iconTint="@color/mobile_color_on_surface" />
+                app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
 
             <TextView
                 android:id="@+id/mobile_dialog_title"
@@ -91,7 +88,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingBottom="8dp"
+            android:paddingHorizontal="12dp"
+            android:paddingBottom="12dp"
             android:scrollbars="vertical"
             tools:listitem="@layout/item_mobile_dialog_row" />
 
