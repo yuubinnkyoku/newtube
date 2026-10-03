@@ -151,6 +151,7 @@
 
     <!-- Local app-module override so locale-specific stmobile resources can translate Downloads. -->
     <string name="header_downloads">Downloads</string>
+    <string name="header_live">Live</string>
 
     <!-- Bottom-nav "You" tab (account + extra sections + settings) -->
     <string name="mobile_nav_you">You</string>
