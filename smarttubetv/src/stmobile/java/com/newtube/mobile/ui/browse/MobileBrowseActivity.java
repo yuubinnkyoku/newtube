@@ -920,7 +920,6 @@ public class MobileBrowseActivity extends MobileActivity
         mBottomNav.setOnItemSelectedListener(item -> {
             if (!mSuppressNavCallback) {
                 Haptics.tick(mBottomNav);
-                animateBottomNavSelection(item.getItemId());
                 onNavItemChosen(item.getItemId());
             }
             return true;
@@ -939,37 +938,6 @@ public class MobileBrowseActivity extends MobileActivity
                 smoothScrollGridToTop();
             } else {
                 onNavItemChosen(item.getItemId());
-            }
-        });
-    }
-
-    /**
-     * VIVI-style selection response: the selected destination lifts and grows a little while
-     * the others settle back. Label expansion is handled by BottomNavigationView's selected-only
-     * label mode; this adds the spatial spring M3E needs to feel continuous rather than binary.
-     */
-    private void animateBottomNavSelection(int selectedId) {
-        mBottomNav.post(() -> {
-            android.view.Menu menu = mBottomNav.getMenu();
-            for (int i = 0; i < menu.size(); i++) {
-                int id = menu.getItem(i).getItemId();
-                View itemView = mBottomNav.findViewById(id);
-                if (itemView == null) {
-                    continue;
-                }
-                boolean selected = id == selectedId;
-                float targetScale = selected ? 1.05f : 1f;
-                float targetY = selected ? -getResources().getDisplayMetrics().density : 0f;
-
-                Motion.Spring spring = new Motion.Spring(0f, 1f, 0f, 430f, 0.72f, 0.001f);
-                itemView.animate().cancel();
-                itemView.animate()
-                        .scaleX(targetScale)
-                        .scaleY(targetScale)
-                        .translationY(targetY)
-                        .setDuration(Math.max(180L, spring.durationMs))
-                        .setInterpolator(spring)
-                        .start();
             }
         });
     }
