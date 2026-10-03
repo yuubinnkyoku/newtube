@@ -10,9 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.radiobutton.MaterialRadioButton;
+import com.google.android.material.shape.ShapeAppearanceModel;
 
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionCategory;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionItem;
@@ -212,7 +214,9 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof HeaderViewHolder) {
             ((HeaderViewHolder) holder).bind(row);
         } else if (holder instanceof RowViewHolder) {
-            ((RowViewHolder) holder).bind(row, mListener);
+            boolean firstInGroup = position == 0 || mRows.get(position - 1).viewType == TYPE_HEADER;
+            boolean lastInGroup = position == mRows.size() - 1 || mRows.get(position + 1).viewType == TYPE_HEADER;
+            ((RowViewHolder) holder).bind(row, mListener, firstInGroup, lastInGroup);
         }
     }
 
@@ -282,7 +286,8 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             chevron = itemView.findViewById(R.id.dialog_row_chevron);
         }
 
-        void bind(Row row, Listener listener) {
+        void bind(Row row, Listener listener, boolean firstInGroup, boolean lastInGroup) {
+            applyGroupedShape(firstInGroup, lastInGroup);
             title.setText(sizeInlineIcons(row.title, title));
 
             if (row.subtitle != null && row.subtitle.length() > 0) {
@@ -303,6 +308,25 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             itemView.setClickable(clickable);
             itemView.setFocusable(clickable);
             title.setAlpha(row.viewType == TYPE_TEXT ? 0.85f : 1f);
+
+        private void applyGroupedShape(boolean first, boolean last) {
+            if (!(itemView instanceof MaterialCardView)) {
+                return;
+            }
+            float density = itemView.getResources().getDisplayMetrics().density;
+            float outer = 20f * density;
+            float connected = 4f * density;
+            float top = first ? outer : connected;
+            float bottom = last ? outer : connected;
+
+            ShapeAppearanceModel shape = new ShapeAppearanceModel.Builder()
+                    .setTopLeftCornerSize(top)
+                    .setTopRightCornerSize(top)
+                    .setBottomLeftCornerSize(bottom)
+                    .setBottomRightCornerSize(bottom)
+                    .build();
+            ((MaterialCardView) itemView).setShapeAppearanceModel(shape);
+        }
 
             switch (row.viewType) {
                 case TYPE_BUTTON:
