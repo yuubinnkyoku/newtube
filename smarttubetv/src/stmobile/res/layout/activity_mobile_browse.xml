@@ -84,7 +84,7 @@
             app:backgroundTint="@color/mobile_m3_surface_container_high"
             app:icon="@drawable/ic_mobile_search"
             app:iconTint="@color/mobile_color_on_surface"
-            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
+            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Small.Square" />
 
     </LinearLayout>
 
@@ -380,6 +380,9 @@
         android:elevation="6dp"
         app:itemIconTint="@color/mobile_bottom_nav_item"
         app:itemTextColor="@color/mobile_bottom_nav_item"
+        app:itemIconGravity="start"
+        app:itemGravity="center"
+        app:itemHorizontalTranslationEnabled="true"
         app:labelVisibilityMode="selected"
         app:paddingBottomSystemWindowInsets="false"
         app:layout_constraintBottom_toBottomOf="parent"
