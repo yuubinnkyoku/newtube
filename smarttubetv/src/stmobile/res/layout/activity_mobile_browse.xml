@@ -198,18 +198,21 @@
                 android:id="@+id/mobile_you_account_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_mobile_group_single"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="20dp">
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp">
 
                 <ImageView
                     android:id="@+id/mobile_you_avatar"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_mobile_account" />
 
@@ -228,7 +231,7 @@
                         android:maxLines="1"
                         android:text="@string/dialog_add_account"
                         android:textColor="@color/mobile_color_on_surface"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
                     <TextView
