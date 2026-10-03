@@ -18,19 +18,16 @@
     <!-- NEWTUBE(you-subscreen): back arrow shown (with the section's name in the title bar) only
          while a section opened from a You row is on screen - BrowseTopBar. GONE otherwise, and a
          GONE view collapses to a point at the start, so the wordmark keeps its 16dp inset. -->
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/mobile_title_back"
         style="?attr/materialIconButtonStyle"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:contentDescription="@string/mobile_dialog_back"
-        android:minWidth="48dp"
-        android:text=""
         android:visibility="gone"
         app:icon="@drawable/ic_mobile_back_arrow"
-        app:iconSize="24dp"
-        app:iconTint="@color/mobile_color_on_surface"
+        app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall"
         app:layout_constraintBottom_toBottomOf="@id/mobile_title_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
