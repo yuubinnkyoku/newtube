@@ -245,17 +245,29 @@ public final class ExpressiveFloatingNav extends LinearLayout {
             holder.indicator.setScaleX(0.4f);
             holder.indicator.setScaleY(1f);
             holder.indicator.setAlpha(0f);
+
+            // NavigationBar-style horizontal reveal, then a tiny expressive rebound.
+            // The indicator has 2dp side insets, so 1.045x still stays inside the destination.
             holder.indicator.animate()
-                    .scaleX(1f)
+                    .scaleX(1.045f)
                     .alpha(0.40f)
-                    .setDuration(300)
+                    .setDuration(210)
                     .setInterpolator(Motion.EMPHASIZED_DECELERATE)
+                    .withEndAction(() -> {
+                        Motion.Spring rebound =
+                                new Motion.Spring(0f, 1f, 0f, 950f, 0.72f, 0.001f);
+                        holder.indicator.animate()
+                                .scaleX(1f)
+                                .setDuration(Math.max(150L, rebound.durationMs))
+                                .setInterpolator(rebound)
+                                .start();
+                    })
                     .start();
         } else {
             holder.indicator.animate()
                     .scaleX(0.4f)
                     .alpha(0f)
-                    .setDuration(180)
+                    .setDuration(170)
                     .setInterpolator(Motion.EMPHASIZED_ACCELERATE)
                     .start();
         }
