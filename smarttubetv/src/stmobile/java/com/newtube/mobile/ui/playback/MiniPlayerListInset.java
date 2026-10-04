@@ -22,7 +22,7 @@ public final class MiniPlayerListInset implements ViewTreeObserver.OnGlobalLayou
 
     private final View mCard;
     private final RecyclerView mList;
-    private final int mBasePaddingBottom;
+    private int mBasePaddingBottom;
     private final int mGapPx;
     private int mAppliedExtra;
 
@@ -44,6 +44,14 @@ public final class MiniPlayerListInset implements ViewTreeObserver.OnGlobalLayou
 
     @Override
     public void onGlobalLayout() {
+        // Another overlay (for example the floating bottom navigation/system gesture inset) may
+        // legitimately change the list's base bottom padding after attach(). Preserve that new
+        // baseline instead of snapping back to the value captured at construction time.
+        int currentBase = mList.getPaddingBottom() - mAppliedExtra;
+        if (currentBase != mBasePaddingBottom) {
+            mBasePaddingBottom = currentBase;
+        }
+
         int extra = requiredExtra();
         if (extra != mAppliedExtra) {
             mAppliedExtra = extra;
