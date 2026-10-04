@@ -257,7 +257,7 @@ public final class ExpressiveFloatingNav extends LinearLayout {
 
         int available = getWidth();
         if (available <= 0) {
-            available = getResources().getDisplayMetrics().widthPixels - dp(32);
+            available = getResources().getDisplayMetrics().widthPixels - dp(24);
         }
 
         // Each other destination keeps a 44dp touch/visual slot and every wrapper has 2dp margins
