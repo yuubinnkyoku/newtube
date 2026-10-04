@@ -277,10 +277,13 @@ public final class ExpressiveFloatingNav extends LinearLayout {
                 + dp(6)    // icon-to-label gap
                 + dp(4);   // anti-clipping breathing room
 
-        int available = getWidth();
-        if (available <= 0) {
-            available = getResources().getDisplayMetrics().widthPixels - dp(24);
-        }
+        // The outer nav is wrap_content, so its CURRENT width cannot be used as the
+        // expansion budget (that would create a circular cap). Budget against the viewport and
+        // let the parent grow/shrink around the animated child widths.
+        int available = getResources().getDisplayMetrics().widthPixels
+                - dp(24)
+                - getPaddingStart()
+                - getPaddingEnd();
 
         // Inactive destinations stay compact, but the selected pill may consume all genuinely
         // free width. Never force a minimum wider than what the bar can actually provide.
