@@ -13,8 +13,8 @@
         android:maxLines="1"
         android:minWidth="0dp"
         android:textAllCaps="false"
-        app:containerShapeDefault="@style/ShapeAppearance.Material3.Corner.Large"
-        app:containerShapePressed="@style/ShapeAppearance.Material3.Corner.Medium"
+        app:containerShapeDefault="@style/ShapeAppearance.Material3.Corner.Full"
+        app:containerShapePressed="@style/ShapeAppearance.Material3.Corner.Full"
         app:containerShapeChecked="@style/ShapeAppearance.Material3.Corner.Full"
         app:iconSize="20dp"
         app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.Xsmall" />
