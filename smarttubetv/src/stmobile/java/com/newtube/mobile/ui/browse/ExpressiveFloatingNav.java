@@ -276,8 +276,9 @@ public final class ExpressiveFloatingNav extends LinearLayout {
         int activeIcon = getContext().getColor(R.color.mobile_m3_on_secondary_container);
         int activeLabel = getContext().getColor(R.color.mobile_m3_secondary);
 
-        int iconColor = (int) ArgbEvaluator.getInstance().evaluate(clamped, inactive, activeIcon);
-        int labelColor = (int) ArgbEvaluator.getInstance().evaluate(clamped, inactive, activeLabel);
+        ArgbEvaluator evaluator = new ArgbEvaluator();
+        int iconColor = (int) evaluator.evaluate(clamped, inactive, activeIcon);
+        int labelColor = (int) evaluator.evaluate(clamped, inactive, activeLabel);
         holder.icon.setImageTintList(ColorStateList.valueOf(iconColor));
         holder.label.setTextColor(labelColor);
     }
