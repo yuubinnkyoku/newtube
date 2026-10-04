@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.ColorUtils;
 
 import com.google.android.material.button.MaterialButton;
 import com.liskovsoft.smartyoutubetv2.tv.R;
@@ -184,11 +185,23 @@ public final class ExpressiveFloatingNav extends LinearLayout {
     private void styleHolder(Holder holder, boolean selected, boolean animate) {
         holder.button.setChecked(selected);
 
+        float targetScale = selected ? 1.05f : 1f;
+        Motion.Spring scaleSpring = new Motion.Spring(0f, 1f, 0f, 430f, 0.68f, 0.001f);
+        holder.button.animate().cancel();
+        holder.button.animate()
+                .scaleX(targetScale)
+                .scaleY(targetScale)
+                .setDuration(Math.max(180L, scaleSpring.durationMs))
+                .setInterpolator(scaleSpring)
+                .start();
+
         int bg = selected
-                ? getContext().getColor(R.color.mobile_m3_secondary_container)
+                ? ColorUtils.setAlphaComponent(
+                        getContext().getColor(R.color.mobile_m3_primary_container),
+                        Math.round(255f * 0.40f))
                 : Color.TRANSPARENT;
         int fg = selected
-                ? getContext().getColor(R.color.mobile_m3_on_secondary_container)
+                ? getContext().getColor(R.color.mobile_m3_primary)
                 : getContext().getColor(R.color.mobile_m3_on_surface_variant);
 
         holder.button.setBackgroundTintList(ColorStateList.valueOf(bg));
