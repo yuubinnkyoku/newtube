@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_gravity="center"
+        android:layout_marginHorizontal="2dp"
         android:alpha="0"
         android:background="@drawable/bg_mobile_floating_nav_indicator"
         android:scaleX="0.4"
