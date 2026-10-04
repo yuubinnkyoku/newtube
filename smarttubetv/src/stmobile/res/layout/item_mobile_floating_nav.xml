@@ -17,6 +17,7 @@
         app:containerShapePressed="@style/ShapeAppearance.Material3.Corner.Full"
         app:containerShapeChecked="@style/ShapeAppearance.Material3.Corner.Full"
         app:iconSize="20dp"
+        app:iconPadding="6dp"
         app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.Xsmall" />
 
     <View
