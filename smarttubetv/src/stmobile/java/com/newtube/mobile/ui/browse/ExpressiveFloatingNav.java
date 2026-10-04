@@ -213,7 +213,7 @@ public final class ExpressiveFloatingNav extends LinearLayout {
             holder.indicator.animate().cancel();
             holder.indicator.setScaleX(selected ? 1f : 0.4f);
             holder.indicator.setScaleY(1f);
-            holder.indicator.setAlpha(selected ? 1f : 0f);
+            holder.indicator.setAlpha(selected ? 0.40f : 0f);
         }
 
         int targetWidth = selected ? selectedWidth(holder) : dp(44);
@@ -247,7 +247,7 @@ public final class ExpressiveFloatingNav extends LinearLayout {
             holder.indicator.setAlpha(0f);
             holder.indicator.animate()
                     .scaleX(1f)
-                    .alpha(1f)
+                    .alpha(0.40f)
                     .setDuration(300)
                     .setInterpolator(Motion.EMPHASIZED_DECELERATE)
                     .start();
