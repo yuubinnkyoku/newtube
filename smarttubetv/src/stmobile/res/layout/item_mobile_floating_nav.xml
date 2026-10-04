@@ -1,32 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="48dp">
+    android:layout_width="60dp"
+    android:layout_height="56dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/mobile_floating_nav_button"
-        style="@style/Widget.NewTube.FloatingNav.Item"
+    <!-- M3E phone navigation-bar active indicator token: 56 x 32dp. -->
+    <View
+        android:id="@+id/mobile_floating_nav_indicator"
+        android:layout_width="56dp"
+        android:layout_height="32dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="2dp"
+        android:alpha="0"
+        android:background="@drawable/bg_mobile_nav_active_indicator"
+        android:scaleX="0.4"
+        android:scaleY="1" />
+
+    <ImageView
+        android:id="@+id/mobile_floating_nav_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="6dp"
+        android:contentDescription="@null" />
+
+    <!-- AUTO/5-item navigation behaves like shifting mode: only the selected label is shown. -->
+    <TextView
+        android:id="@+id/mobile_floating_nav_label"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="18dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:alpha="0"
         android:ellipsize="end"
+        android:gravity="center"
         android:maxLines="1"
-        android:minWidth="0dp"
-        android:textAllCaps="false"
-        app:containerShapeDefault="@style/ShapeAppearance.Material3.Corner.Full"
-        app:containerShapePressed="@style/ShapeAppearance.Material3.Corner.Full"
-        app:containerShapeChecked="@style/ShapeAppearance.Material3.Corner.Full"
-        app:iconSize="20dp"
-        app:iconPadding="6dp"
-        app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.Xsmall" />
+        android:textColor="@color/mobile_m3_secondary"
+        android:textSize="10sp"
+        android:visibility="invisible" />
 
     <View
         android:id="@+id/mobile_floating_nav_badge"
         android:layout_width="8dp"
         android:layout_height="8dp"
         android:layout_gravity="top|end"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="6dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="3dp"
         android:background="@drawable/bg_mobile_nav_badge"
         android:visibility="gone" />
 
