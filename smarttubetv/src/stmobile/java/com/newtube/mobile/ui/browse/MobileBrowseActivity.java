@@ -1011,7 +1011,7 @@ public class MobileBrowseActivity extends MobileActivity
         mErrorContainer.setImportantForAccessibility(a11y);
 
         boolean subScreen = mSectionFromYou && !mYouShowing
-                && mBottomNav.getMenu().findItem(toMenuItemId(mCurrentSectionId)) == null;
+                && !mBottomNav.containsItem(toMenuItemId(mCurrentSectionId));
         mTopBar.show(subScreen, getCurrentSectionTitle());
     }
 
@@ -1172,18 +1172,15 @@ public class MobileBrowseActivity extends MobileActivity
 
     /** A dot on the You tab while there is an update the user hasn't opened yet. */
     private void refreshUpdateBadge() {
-        if (mBottomNav.getMenu().findItem(YOU_ITEM_ID) == null) {
+        if (!mBottomNav.containsItem(YOU_ITEM_ID)) {
             return;
         }
 
-        if (AppUpdates.instance(this).hasUnseenUpdate()) {
-            BadgeDrawable badge = mBottomNav.getOrCreateBadge(YOU_ITEM_ID);
-            badge.setBackgroundColor(getColorInt(R.color.mobile_color_primary));
-            badge.setContentDescriptionNumberless(getString(R.string.mobile_update_row_available));
-            badge.setVisible(true);
-        } else {
-            mBottomNav.removeBadge(YOU_ITEM_ID);
-        }
+        boolean visible = AppUpdates.instance(this).hasUnseenUpdate();
+        mBottomNav.setBadgeVisible(
+                YOU_ITEM_ID,
+                visible,
+                visible ? getString(R.string.mobile_update_row_available) : null);
     }
 
     private void addYouUpdateRow() {
@@ -1369,7 +1366,7 @@ public class MobileBrowseActivity extends MobileActivity
     private void syncNavHighlight(int sectionId) {
         int itemId = toMenuItemId(sectionId);
 
-        if (mBottomNav.getMenu().findItem(itemId) != null && mBottomNav.getSelectedItemId() != itemId) {
+        if (mBottomNav.containsItem(itemId) && mBottomNav.getSelectedItemId() != itemId) {
             mSuppressNavCallback = true;
             mBottomNav.setSelectedItemId(itemId);
             mSuppressNavCallback = false;
@@ -2013,7 +2010,7 @@ public class MobileBrowseActivity extends MobileActivity
             // A section with its own tab re-lights that tab; one opened from a You row has none,
             // so the restored You highlight is the right one to keep.
             syncNavHighlight(mCurrentSectionId);
-            if (!mSectionFromYou && mBottomNav.getMenu().findItem(toMenuItemId(mCurrentSectionId)) == null) {
+            if (!mSectionFromYou && !mBottomNav.containsItem(toMenuItemId(mCurrentSectionId))) {
                 // A section without a tab that is no longer a You sub-screen: nothing may stay lit
                 // on You over it; fall back to Home's tab like a fresh start.
                 syncNavHighlight(MediaGroup.TYPE_HOME);
@@ -2042,7 +2039,7 @@ public class MobileBrowseActivity extends MobileActivity
         // Home itself exits.
         if (mYouShowing || mCurrentSectionId != MediaGroup.TYPE_HOME) {
             int homeItemId = toMenuItemId(MediaGroup.TYPE_HOME);
-            if (mBottomNav.getMenu().findItem(homeItemId) != null) {
+            if (mBottomNav.containsItem(homeItemId)) {
                 mBottomNav.setSelectedItemId(homeItemId); // listener hides the panel + loads Home
                 return;
             }
