@@ -30,10 +30,10 @@ public final class MagneticDrag {
     /** How far the object follows while it is still stuck: the Pixel's notification rows. */
     public static final float PIXEL_PULL = 0.5f;
     // SystemUI's springs: a quick, barely-overshooting catch-up onto the finger, and back.
-    private static final float DETACH_STIFFNESS = 800f;
-    private static final float DETACH_DAMPING = 0.95f;
-    private static final float ATTACH_STIFFNESS = 850f;
-    private static final float ATTACH_DAMPING = 0.95f;
+    private static final float DETACH_STIFFNESS = Motion.EXPRESSIVE_FAST_SPATIAL_STIFFNESS;
+    private static final float DETACH_DAMPING = Motion.EXPRESSIVE_FAST_SPATIAL_DAMPING;
+    private static final float ATTACH_STIFFNESS = Motion.EXPRESSIVE_FAST_SPATIAL_STIFFNESS;
+    private static final float ATTACH_DAMPING = Motion.EXPRESSIVE_FAST_SPATIAL_DAMPING;
 
     private final View mView;
     private final Target mTarget;

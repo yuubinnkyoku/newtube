@@ -13,6 +13,7 @@ import androidx.dynamicanimation.animation.SpringAnimation;
 
 import com.newtube.mobile.ui.common.Haptics;
 import com.newtube.mobile.ui.common.MagneticDrag;
+import com.newtube.mobile.ui.common.Motion;
 
 /**
  * NEWTUBE(motion): swipe the docked mini card sideways to close it, like YouTube's. The card
@@ -40,8 +41,8 @@ public final class MiniCardSwipe implements View.OnTouchListener {
 
     private static final float FLING_VELOCITY_DP = 450f;
     /** SystemUI's snap-back spring for a notification that did not go. */
-    private static final float SNAP_BACK_STIFFNESS = 550f;
-    private static final float SNAP_BACK_DAMPING = 0.6f;
+    private static final float SNAP_BACK_STIFFNESS = Motion.EXPRESSIVE_FAST_SPATIAL_STIFFNESS;
+    private static final float SNAP_BACK_DAMPING = Motion.EXPRESSIVE_FAST_SPATIAL_DAMPING;
     private static final long FLY_MIN_MS = 110;
     private static final long FLY_MAX_MS = 240;
 

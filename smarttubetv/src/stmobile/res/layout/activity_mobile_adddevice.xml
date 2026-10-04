@@ -43,8 +43,7 @@
             android:paddingEnd="16dp"
             android:text="@string/mobile_add_device_title"
             android:textColor="@color/mobile_color_on_surface"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
     </LinearLayout>
 

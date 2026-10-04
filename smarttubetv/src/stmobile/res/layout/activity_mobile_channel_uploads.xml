@@ -52,32 +52,20 @@
             android:maxLines="1"
             android:paddingEnd="16dp"
             android:textColor="@color/mobile_color_on_surface"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             tools:text="Daily Top Music Videos" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/mobile_channel_uploads_play_all"
-            style="@style/Widget.MaterialComponents.Button"
+            style="@style/Widget.NewTube.Button.Pill"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:backgroundTint="@color/mobile_color_inverse_surface"
-            android:fontFamily="sans-serif-medium"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:minHeight="40dp"
-            android:paddingHorizontal="14dp"
             android:text="@string/mobile_playlist_play_all"
-            android:textAllCaps="false"
-            android:textColor="@color/mobile_color_on_inverse_surface"
-            android:textSize="14sp"
             android:visibility="gone"
-            app:cornerRadius="20dp"
             app:icon="@drawable/ic_player_play"
             app:iconGravity="textStart"
-            app:iconSize="18dp"
-            app:iconTint="@color/mobile_color_on_inverse_surface"
+            app:iconSize="20dp"
             tools:visibility="visible" />
 
     </LinearLayout>
