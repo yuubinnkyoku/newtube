@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
@@ -25,6 +26,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -227,8 +231,29 @@ public class MobileBrowseActivity extends MobileActivity
 
     @Override
     protected boolean shouldInsetContentForNavigationBar() {
-        // The M3E navigation surface now floats above the gesture area instead of painting through it.
-        return true;
+        // Feed/You content intentionally paints through the floating nav and into the gesture area.
+        // The nav itself consumes the bottom system inset in setupBottomEdgeToEdge().
+        return false;
+    }
+
+    @Override
+    protected void applyMobileSystemBars() {
+        super.applyMobileSystemBars();
+
+        // Browse is the one ordinary screen whose page should continue behind the floating nav and
+        // the gesture-navigation area. MobileActivity still applies the top/side safe insets, so
+        // status-bar/cutout content remains safe.
+        if (Build.VERSION.SDK_INT >= 30) {
+            getWindow().setDecorFitsSystemWindows(false);
+        } else {
+            int flags = getWindow().getDecorView().getSystemUiVisibility();
+            flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            getWindow().getDecorView().setSystemUiVisibility(flags);
+        }
+        getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= 29) {
+            getWindow().setNavigationBarContrastEnforced(false);
+        }
     }
 
     @Override
@@ -287,6 +312,7 @@ public class MobileBrowseActivity extends MobileActivity
         setupSwipeRefresh();
         mBottomNav = findViewById(R.id.mobile_bottom_nav);
         mYouPanel = findViewById(R.id.mobile_you_panel);
+        setupBottomEdgeToEdge();
         mYouRows = findViewById(R.id.mobile_you_rows);
         mYouAccountText = findViewById(R.id.mobile_you_account_text);
         mYouAccountSub = findViewById(R.id.mobile_you_account_sub);
@@ -308,6 +334,67 @@ public class MobileBrowseActivity extends MobileActivity
         setupMiniPlayerBar();
         // NEWTUBE(mini-inset): the last card can scroll clear of the docked mini-player.
         com.newtube.mobile.ui.playback.MiniPlayerListInset.attach(mMiniPlayerBar, mContentGrid);
+    }
+
+    /**
+     * The feed viewport reaches the physical bottom; only the floating navigation is lifted above
+     * the system gesture area. Extra list/You padding supplies scroll range so the final content
+     * can clear the overlay, while clipToPadding=false keeps content visibly flowing underneath it.
+     */
+    private void setupBottomEdgeToEdge() {
+        View root = findViewById(R.id.mobile_browse_root);
+        if (root == null || mBottomNav == null || mContentGrid == null || mYouPanel == null) {
+            return;
+        }
+
+        final int gridBaseBottom = mContentGrid.getPaddingBottom();
+        final int youBaseBottom = mYouPanel.getPaddingBottom();
+
+        ViewGroup.LayoutParams rawParams = mBottomNav.getLayoutParams();
+        final int navBaseMargin;
+        if (rawParams instanceof ViewGroup.MarginLayoutParams) {
+            navBaseMargin = ((ViewGroup.MarginLayoutParams) rawParams).bottomMargin;
+        } else {
+            navBaseMargin = 0;
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets system = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout());
+            int bottomInset = system.bottom;
+
+            ViewGroup.LayoutParams params = mBottomNav.getLayoutParams();
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams margins = (ViewGroup.MarginLayoutParams) params;
+                int wanted = navBaseMargin + bottomInset;
+                if (margins.bottomMargin != wanted) {
+                    margins.bottomMargin = wanted;
+                    mBottomNav.setLayoutParams(margins);
+                }
+            }
+
+            int navHeight = mBottomNav.getLayoutParams().height;
+            if (navHeight < 0) {
+                navHeight = Math.round(64f * getResources().getDisplayMetrics().density);
+            }
+            int overlay = navHeight + navBaseMargin + bottomInset;
+
+            mContentGrid.setPadding(
+                    mContentGrid.getPaddingLeft(),
+                    mContentGrid.getPaddingTop(),
+                    mContentGrid.getPaddingRight(),
+                    gridBaseBottom + overlay);
+
+            mYouPanel.setPadding(
+                    mYouPanel.getPaddingLeft(),
+                    mYouPanel.getPaddingTop(),
+                    mYouPanel.getPaddingRight(),
+                    youBaseBottom + overlay);
+
+            return windowInsets;
+        });
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void setupSwipeRefresh() {
