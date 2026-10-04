@@ -369,9 +369,8 @@
          Expressive floating navigation: one suspended pill instead of a full-width M2-era bar.
          Only the active destination exposes its label; selection itself is animated in code.
     -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <com.newtube.mobile.ui.browse.ExpressiveFloatingNav
         android:id="@+id/mobile_bottom_nav"
-        style="@style/Widget.Material3Expressive.BottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="64dp"
         android:layout_marginHorizontal="16dp"
@@ -379,13 +378,6 @@
         android:background="@drawable/bg_mobile_floating_nav"
         android:clipToOutline="true"
         android:elevation="6dp"
-        app:itemIconTint="@color/mobile_bottom_nav_item"
-        app:itemTextColor="@color/mobile_bottom_nav_item"
-        app:itemIconGravity="start"
-        app:itemGravity="center"
-        app:itemHorizontalTranslationEnabled="true"
-        app:labelVisibilityMode="selected"
-        app:paddingBottomSystemWindowInsets="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
