@@ -1652,7 +1652,6 @@ public class MobileBrowseActivity extends MobileActivity
     }
 
     private void rebuildBottomNav() {
-        Menu menu = mBottomNav.getMenu();
         List<BrowseSection> navSections = selectNavSections();
 
         StringBuilder signature = new StringBuilder();
@@ -1663,10 +1662,10 @@ public class MobileBrowseActivity extends MobileActivity
         }
         String newSignature = signature.toString();
 
-        if (newSignature.equals(mNavSignature) && menu.size() == navSections.size() + 1) {
-            // Same tabs as on screen: only re-assert the highlight (the section may have moved).
+        if (newSignature.equals(mNavSignature) && mBottomNav.getItemCount() == navSections.size() + 1) {
+            // Same destinations as on screen: only re-assert the highlight.
             mSuppressNavCallback = true;
-            reassertNavHighlight(menu, false);
+            reassertNavHighlight(false);
             mSuppressNavCallback = false;
             return;
         }
@@ -1674,25 +1673,27 @@ public class MobileBrowseActivity extends MobileActivity
 
         mSuppressNavCallback = true;
 
-        menu.clear();
-
-        for (int i = 0; i < navSections.size(); i++) {
-            BrowseSection section = navSections.get(i);
-
-            android.view.MenuItem item = menu.add(Menu.NONE, toMenuItemId(section.getId()), i, section.getTitle());
-
+        List<ExpressiveFloatingNav.Item> items = new ArrayList<>();
+        for (BrowseSection section : navSections) {
             int icon = navIconOrResFor(section);
             if (icon > 0) {
-                item.setIcon(icon);
+                items.add(new ExpressiveFloatingNav.Item(
+                        toMenuItemId(section.getId()),
+                        section.getTitle(),
+                        icon));
             }
         }
 
         // The synthetic You tab always sits last (account + extra sections + settings).
-        menu.add(Menu.NONE, YOU_ITEM_ID, navSections.size(), R.string.mobile_nav_you)
-                .setIcon(R.drawable.ic_nav_you);
+        items.add(new ExpressiveFloatingNav.Item(
+                YOU_ITEM_ID,
+                getString(R.string.mobile_nav_you),
+                R.drawable.ic_nav_you));
 
-        // Re-assert the highlight after clear()/add() wiped it, so the current tab stays lit.
-        reassertNavHighlight(menu, true);
+        mBottomNav.setItems(items);
+
+        // Re-assert the highlight after rebuilding the child views.
+        reassertNavHighlight(true);
 
         mSuppressNavCallback = false;
 
@@ -1700,14 +1701,14 @@ public class MobileBrowseActivity extends MobileActivity
 
         // Long-press on a section tab opens the section-management menu (Refresh / Rename /
         // Move / Mark watched / Clear history, ...) - the touch equivalent of the TV D-pad
-        // section long-press, formerly the drawer rows' "..." overflow. Item views exist only
-        // after the menu inflates into the bar, hence the post.
+        // section long-press, formerly the drawer rows' overflow action.
         mBottomNav.post(() -> {
             for (BrowseSection section : navSections) {
                 View itemView = mBottomNav.findViewById(toMenuItemId(section.getId()));
                 if (itemView != null) {
                     int sectionId = section.getId();
                     itemView.setOnLongClickListener(v -> {
+                        Haptics.longPress(v);
                         if (mPresenter != null) {
                             mPresenter.onSectionLongPressed(sectionId);
                         }
@@ -1718,12 +1719,13 @@ public class MobileBrowseActivity extends MobileActivity
         });
     }
 
-    /** Callers hold {@link #mSuppressNavCallback}. {@code force}: the menu was just rebuilt. */
-    private void reassertNavHighlight(Menu menu, boolean force) {
+    /** Callers hold {@link #mSuppressNavCallback}. {@code force}: the nav was just rebuilt. */
+    private void reassertNavHighlight(boolean force) {
         int itemId;
         if (mYouShowing) {
             itemId = YOU_ITEM_ID;
-        } else if (mCurrentSectionId >= 0 && menu.findItem(toMenuItemId(mCurrentSectionId)) != null) {
+        } else if (mCurrentSectionId >= 0
+                && mBottomNav.containsItem(toMenuItemId(mCurrentSectionId))) {
             itemId = toMenuItemId(mCurrentSectionId);
         } else {
             return;
