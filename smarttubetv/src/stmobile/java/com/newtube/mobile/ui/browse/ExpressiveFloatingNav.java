@@ -126,7 +126,7 @@ public final class ExpressiveFloatingNav extends LinearLayout {
             Holder holder = new Holder(item, root, button, badge);
             mHolders.put(item.id, holder);
 
-            MarginLayoutParams params = new MarginLayoutParams(dp(44), dp(48));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dp(44), dp(48));
             params.leftMargin = dp(2);
             params.rightMargin = dp(2);
             addView(root, params);
