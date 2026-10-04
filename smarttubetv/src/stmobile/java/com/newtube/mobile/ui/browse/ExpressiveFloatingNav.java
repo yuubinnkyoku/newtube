@@ -2,37 +2,40 @@ package com.newtube.mobile.ui.browse;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ArgbEvaluator;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.ColorUtils;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.motion.MotionUtils;
 import com.liskovsoft.smartyoutubetv2.tv.R;
-import com.newtube.mobile.ui.common.Motion;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Five-destination floating navigation tailored for the phone shell.
+ * Five-destination floating navigation for the phone shell.
  *
- * <p>BottomNavigationView's equal-width item layout cannot reproduce the M3 Expressive/VIVI
- * pattern on a narrow phone with five Japanese labels: the selected label wraps or the indicator
- * escapes its container. This view keeps four inactive destinations compact and gives the selected
- * destination a content-driven pill whose width springs between states.</p>
+ * <p>The outer floating shell is NewTube's own treatment, but destination behavior follows the
+ * M3 Expressive navigation-bar model on phone: fixed item slots, a 56x32 active indicator that
+ * grows horizontally from 0.4x to 1x using the emphasized motion token, selected-only labels when
+ * there are more than three destinations, and no Button-style press morph/bounce on the whole
+ * destination.</p>
  */
 public final class ExpressiveFloatingNav extends LinearLayout {
     public interface OnItemSelectedListener {
@@ -56,9 +59,20 @@ public final class ExpressiveFloatingNav extends LinearLayout {
     }
 
     private static final int NO_SELECTION = View.NO_ID;
+    private static final int[] CHECKED_STATE = {android.R.attr.state_checked};
+    private static final int[] EMPTY_STATE = new int[0];
+
+    // M3 Expressive phone nav-bar tokens:
+    // active indicator 56x32dp, item icon 24dp, container 64dp.
+    private static final int ITEM_WIDTH_DP = 60;
+    private static final int ITEM_HEIGHT_DP = 56;
 
     private final SparseArray<Holder> mHolders = new SparseArray<>();
     private final List<Item> mItems = new ArrayList<>();
+
+    private final TimeInterpolator mIndicatorInterpolator;
+    private final int mIndicatorDurationMs;
+
     private int mSelectedItemId = NO_SELECTION;
     private OnItemSelectedListener mSelectedListener;
     private OnItemReselectedListener mReselectedListener;
@@ -77,6 +91,15 @@ public final class ExpressiveFloatingNav extends LinearLayout {
         setGravity(Gravity.CENTER);
         setClipChildren(false);
         setClipToPadding(false);
+
+        mIndicatorInterpolator = MotionUtils.resolveThemeInterpolator(
+                context,
+                com.google.android.material.R.attr.motionEasingEmphasizedInterpolator,
+                new FastOutSlowInInterpolator());
+        mIndicatorDurationMs = MotionUtils.resolveThemeDuration(
+                context,
+                com.google.android.material.R.attr.motionDurationLong2,
+                300);
     }
 
     public void setOnItemSelectedListener(@Nullable OnItemSelectedListener listener) {
@@ -111,32 +134,24 @@ public final class ExpressiveFloatingNav extends LinearLayout {
         for (Item item : mItems) {
             FrameLayout root = (FrameLayout) inflater.inflate(
                     R.layout.item_mobile_floating_nav, this, false);
-            MaterialButton button = root.findViewById(R.id.mobile_floating_nav_button);
+            View indicator = root.findViewById(R.id.mobile_floating_nav_indicator);
+            ImageView icon = root.findViewById(R.id.mobile_floating_nav_icon);
+            TextView label = root.findViewById(R.id.mobile_floating_nav_label);
             View badge = root.findViewById(R.id.mobile_floating_nav_badge);
 
-            button.setId(item.id);
-            button.setIconResource(item.iconRes);
-            button.setCheckable(true);
-            button.setSingleLine(true);
-            button.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            button.setGravity(Gravity.CENTER);
-            button.setIconGravity(MaterialButton.ICON_GRAVITY_TEXT_START);
-            button.setIconPadding(dp(6));
-            // 48dp-tall destinations are pills from the very first frame. Do not wait for a
-            // checked-state shape transition; that was why the first selection could look less
-            // rounded until it was tapped again.
-            button.setCornerRadius(dp(24));
-            button.setContentDescription(item.title);
+            root.setId(item.id);
+            root.setContentDescription(item.title);
+            icon.setImageResource(item.iconRes);
+            label.setText(item.title);
 
-            Holder holder = new Holder(item, root, button, badge);
+            Holder holder = new Holder(item, root, indicator, icon, label, badge);
             mHolders.put(item.id, holder);
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dp(44), dp(48));
-            params.leftMargin = dp(2);
-            params.rightMargin = dp(2);
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(dp(ITEM_WIDTH_DP), dp(ITEM_HEIGHT_DP));
             addView(root, params);
 
-            button.setOnClickListener(v -> {
+            root.setOnClickListener(v -> {
                 if (item.id == mSelectedItemId) {
                     if (mReselectedListener != null) {
                         mReselectedListener.onItemReselected(item.id);
@@ -164,7 +179,7 @@ public final class ExpressiveFloatingNav extends LinearLayout {
             return;
         }
         holder.badge.setVisibility(visible ? VISIBLE : GONE);
-        holder.button.setContentDescription(
+        holder.root.setContentDescription(
                 visible && description != null
                         ? holder.item.title + ", " + description
                         : holder.item.title);
@@ -187,116 +202,96 @@ public final class ExpressiveFloatingNav extends LinearLayout {
     }
 
     private void styleHolder(Holder holder, boolean selected, boolean animate) {
-        holder.button.setChecked(selected);
+        holder.root.setSelected(selected);
+        holder.icon.setImageState(selected ? CHECKED_STATE : EMPTY_STATE, true);
 
-        // Keep the destination inside the floating shell at all times. Selection is expressed by
-        // width + tonal fill, not by scaling the whole button beyond its allocated slot.
-        holder.button.animate().cancel();
-        holder.button.setScaleX(1f);
-        holder.button.setScaleY(1f);
+        if (holder.animator != null) {
+            holder.animator.cancel();
+            holder.animator = null;
+        }
 
-        int bg = selected
-                ? ColorUtils.setAlphaComponent(
-                        getContext().getColor(R.color.mobile_m3_primary_container),
-                        Math.round(255f * 0.40f))
-                : Color.TRANSPARENT;
-        int fg = selected
-                ? getContext().getColor(R.color.mobile_m3_primary)
-                : getContext().getColor(R.color.mobile_m3_on_surface_variant);
-
-        holder.button.setBackgroundTintList(ColorStateList.valueOf(bg));
-        holder.button.setIconTint(ColorStateList.valueOf(fg));
-        holder.button.setTextColor(fg);
-
-        int targetWidth = selected ? selectedWidth(holder) : dp(44);
-
+        float target = selected ? 1f : 0f;
         if (!animate) {
-            holder.root.getLayoutParams().width = targetWidth;
-            holder.root.requestLayout();
-            holder.button.setText(selected ? holder.item.title : "");
+            holder.progress = target;
+            applyIndicatorProgress(holder, target, target);
+            if (!selected) {
+                holder.label.setVisibility(INVISIBLE);
+            }
             return;
         }
 
         if (selected) {
-            // Reveal text while the pill grows; singleLine+ellipsize guarantees no vertical wrap.
-            holder.button.setText(holder.item.title);
+            holder.label.setVisibility(VISIBLE);
         }
 
-        animateWidth(holder, targetWidth, selected);
-    }
-
-    private void animateWidth(Holder holder, int targetWidth, boolean selected) {
-        if (holder.widthAnimator != null) {
-            holder.widthAnimator.cancel();
-        }
-
-        int current = holder.root.getWidth();
-        if (current <= 0) {
-            current = holder.root.getLayoutParams().width;
-        }
-        if (current == targetWidth) {
-            if (!selected) {
-                holder.button.setText("");
-            }
-            return;
-        }
-
-        Motion.Spring spring = new Motion.Spring(0f, 1f, 0f, 520f, 0.78f, 0.001f);
-        ValueAnimator animator = ValueAnimator.ofInt(current, targetWidth);
-        animator.setDuration(Math.max(190L, spring.durationMs));
-        animator.setInterpolator(spring);
-        final int lower = Math.min(current, targetWidth);
-        final int upper = Math.max(current, targetWidth);
+        ValueAnimator animator = ValueAnimator.ofFloat(holder.progress, target);
+        animator.setDuration(mIndicatorDurationMs);
+        animator.setInterpolator(mIndicatorInterpolator);
         animator.addUpdateListener(a -> {
-            int width = (int) a.getAnimatedValue();
-            width = Math.max(lower, Math.min(upper, width));
-            holder.root.getLayoutParams().width = width;
-            holder.root.requestLayout();
+            float progress = (float) a.getAnimatedValue();
+            holder.progress = progress;
+            applyIndicatorProgress(holder, progress, target);
         });
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                holder.progress = target;
+                applyIndicatorProgress(holder, target, target);
                 if (!selected && holder.item.id != mSelectedItemId) {
-                    holder.button.setText("");
+                    holder.label.setVisibility(INVISIBLE);
                 }
-                if (holder.widthAnimator == animation) {
-                    holder.widthAnimator = null;
+                if (holder.animator == animation) {
+                    holder.animator = null;
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                if (holder.animator == animation) {
+                    holder.animator = null;
                 }
             }
         });
-        holder.widthAnimator = animator;
+        holder.animator = animator;
         animator.start();
     }
 
-    private int selectedWidth(Holder holder) {
-        float textWidth = holder.button.getPaint().measureText(holder.item.title.toString());
+    /**
+     * Mirrors NavigationBarItemView.ActiveIndicatorTransform:
+     * indicator scaleX 0.4 -> 1.0, scaleY fixed at 1, alpha uses the first/last fifth of progress.
+     */
+    private void applyIndicatorProgress(Holder holder, float progress, float target) {
+        float clamped = Math.max(0f, Math.min(1f, progress));
 
-        // MaterialButton has non-trivial content insets. Measuring only text + an arbitrary
-        // constant was why even "ホーム" collapsed to "ホ…". Count the real button padding plus
-        // the explicit icon/gap from item_mobile_floating_nav.xml.
-        int desired = (int) Math.ceil(textWidth)
-                + holder.button.getPaddingStart()
-                + holder.button.getPaddingEnd()
-                + dp(20)   // icon
-                + dp(6)    // icon-to-label gap
-                + dp(4);   // anti-clipping breathing room
+        holder.indicator.setScaleX(0.4f + 0.6f * clamped);
+        holder.indicator.setScaleY(1f);
+        holder.indicator.setAlpha(indicatorAlpha(clamped, target));
 
-        // The outer nav is wrap_content, so its CURRENT width cannot be used as the
-        // expansion budget (that would create a circular cap). Budget against the viewport and
-        // let the parent grow/shrink around the animated child widths.
-        int available = getResources().getDisplayMetrics().widthPixels
-                - dp(24)
-                - getPaddingStart()
-                - getPaddingEnd();
+        // Selected-only label: appear with the destination selection, but never alter item width.
+        holder.label.setAlpha(clamped);
+        holder.label.setScaleX(0.92f + 0.08f * clamped);
+        holder.label.setScaleY(0.92f + 0.08f * clamped);
 
-        // Inactive destinations stay compact, but the selected pill may consume all genuinely
-        // free width. Never force a minimum wider than what the bar can actually provide.
-        int siblings = Math.max(0, mItems.size() - 1);
-        int max = available - siblings * dp(44) - mItems.size() * dp(4);
-        int safeMax = Math.max(dp(72), max);
-        int min = Math.min(dp(96), safeMax);
+        int inactive = getContext().getColor(R.color.mobile_m3_on_surface_variant);
+        int activeIcon = getContext().getColor(R.color.mobile_m3_on_secondary_container);
+        int activeLabel = getContext().getColor(R.color.mobile_m3_secondary);
 
-        return Math.max(min, Math.min(desired, safeMax));
+        int iconColor = (int) ArgbEvaluator.getInstance().evaluate(clamped, inactive, activeIcon);
+        int labelColor = (int) ArgbEvaluator.getInstance().evaluate(clamped, inactive, activeLabel);
+        holder.icon.setImageTintList(ColorStateList.valueOf(iconColor));
+        holder.label.setTextColor(labelColor);
+    }
+
+    private float indicatorAlpha(float progress, float target) {
+        // Same 1/5 alpha window as MDC NavigationBarItemView.ActiveIndicatorTransform.
+        if (target == 0f) {
+            return clamp01((progress - 0.8f) / 0.2f);
+        }
+        return clamp01(progress / 0.2f);
+    }
+
+    private static float clamp01(float value) {
+        return Math.max(0f, Math.min(1f, value));
     }
 
     private int dp(int dp) {
@@ -306,14 +301,26 @@ public final class ExpressiveFloatingNav extends LinearLayout {
     private static final class Holder {
         final Item item;
         final FrameLayout root;
-        final MaterialButton button;
+        final View indicator;
+        final ImageView icon;
+        final TextView label;
         final View badge;
-        @Nullable ValueAnimator widthAnimator;
 
-        Holder(Item item, FrameLayout root, MaterialButton button, View badge) {
+        float progress;
+        @Nullable ValueAnimator animator;
+
+        Holder(
+                Item item,
+                FrameLayout root,
+                View indicator,
+                ImageView icon,
+                TextView label,
+                View badge) {
             this.item = item;
             this.root = root;
-            this.button = button;
+            this.indicator = indicator;
+            this.icon = icon;
+            this.label = label;
             this.badge = badge;
         }
     }
