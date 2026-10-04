@@ -122,6 +122,10 @@ public final class ExpressiveFloatingNav extends LinearLayout {
             button.setGravity(Gravity.CENTER);
             button.setIconGravity(MaterialButton.ICON_GRAVITY_TEXT_START);
             button.setIconPadding(dp(6));
+            // 48dp-tall destinations are pills from the very first frame. Do not wait for a
+            // checked-state shape transition; that was why the first selection could look less
+            // rounded until it was tapped again.
+            button.setCornerRadius(dp(24));
             button.setContentDescription(item.title);
 
             Holder holder = new Holder(item, root, button, badge);
@@ -185,15 +189,11 @@ public final class ExpressiveFloatingNav extends LinearLayout {
     private void styleHolder(Holder holder, boolean selected, boolean animate) {
         holder.button.setChecked(selected);
 
-        float targetScale = selected ? 1.05f : 1f;
-        Motion.Spring scaleSpring = new Motion.Spring(0f, 1f, 0f, 430f, 0.68f, 0.001f);
+        // Keep the destination inside the floating shell at all times. Selection is expressed by
+        // width + tonal fill, not by scaling the whole button beyond its allocated slot.
         holder.button.animate().cancel();
-        holder.button.animate()
-                .scaleX(targetScale)
-                .scaleY(targetScale)
-                .setDuration(Math.max(180L, scaleSpring.durationMs))
-                .setInterpolator(scaleSpring)
-                .start();
+        holder.button.setScaleX(1f);
+        holder.button.setScaleY(1f);
 
         int bg = selected
                 ? ColorUtils.setAlphaComponent(
@@ -245,8 +245,12 @@ public final class ExpressiveFloatingNav extends LinearLayout {
         ValueAnimator animator = ValueAnimator.ofInt(current, targetWidth);
         animator.setDuration(Math.max(190L, spring.durationMs));
         animator.setInterpolator(spring);
+        final int lower = Math.min(current, targetWidth);
+        final int upper = Math.max(current, targetWidth);
         animator.addUpdateListener(a -> {
-            holder.root.getLayoutParams().width = (int) a.getAnimatedValue();
+            int width = (int) a.getAnimatedValue();
+            width = Math.max(lower, Math.min(upper, width));
+            holder.root.getLayoutParams().width = width;
             holder.root.requestLayout();
         });
         animator.addListener(new AnimatorListenerAdapter() {
