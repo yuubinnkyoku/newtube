@@ -180,7 +180,7 @@
         android:background="@color/mobile_color_background"
         android:clipToPadding="false"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mobile_title_bar"
