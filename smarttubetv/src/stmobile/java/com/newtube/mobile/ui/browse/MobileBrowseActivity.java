@@ -926,9 +926,7 @@ public class MobileBrowseActivity extends MobileActivity
             if (mSuppressNavCallback) {
                 return;
             }
-            Haptics.tick(mBottomNav);
             View selected = mBottomNav.findViewById(itemId);
-            Motion.tap(selected);
             if (itemId != YOU_ITEM_ID && mContentGrid != null
                     && mContentGrid.getVisibility() == View.VISIBLE && mContentGrid.canScrollVertically(-1)) {
                 smoothScrollGridToTop();
