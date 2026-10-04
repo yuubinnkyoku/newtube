@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +26,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,8 +36,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
-import com.google.android.material.badge.BadgeDrawable;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
 import com.liskovsoft.mediaserviceinterfaces.oauth.Account;
@@ -70,6 +71,7 @@ import com.newtube.mobile.casting.CastVolumeKeys;
 import com.newtube.mobile.ui.common.FeedCache;
 import com.newtube.mobile.ui.common.FeedSwapWarmup;
 import com.newtube.mobile.ui.common.FrameGate;
+import com.newtube.mobile.ui.common.Haptics;
 import com.newtube.mobile.ui.common.MobileActivity;
 import com.newtube.mobile.ui.common.MobileSnackbar;
 import com.newtube.mobile.ui.common.Motion;
@@ -89,12 +91,12 @@ import java.util.List;
  * Drives the existing {@link BrowsePresenter} exactly like the TV
  * {@code BrowseFragment} does (setView/onViewInitialized + the
  * onSectionFocused/onVideoItemClicked/onScrollEnd input contract), but renders with a
- * {@link BottomNavigationView} for sections (in place of the Leanback headers column)
+ * {@link ExpressiveFloatingNav} for sections (in place of the Leanback headers column)
  * and a flat {@link RecyclerView} grid for the selected section's videos (in place of
  * nested Leanback rows/PageRow fragments - row/shorts/multi-grid layouts are a later
  * wave per ROADMAP.md Wave 2).
  *
- * {@code BottomNavigationView} hard-caps at 5 items, but {@code BrowsePresenter} can
+ * The floating phone nav intentionally shows at most 5 items, but {@code BrowsePresenter} can
  * deliver 10+ sections (Home, Trending, Subscriptions, History, Music, Gaming, News,
  * Playlists, Settings, ...). The bar shows only the curated
  * {@link #PREFERRED_SECTION_IDS} plus the synthetic You tab - no backfill; every other
@@ -106,7 +108,7 @@ import java.util.List;
  */
 public class MobileBrowseActivity extends MobileActivity
         implements BrowseView, MiniPlayerBridge.MiniHost {
-    /** BottomNavigationView item ids must be non-zero; BrowseSection ids start at 0. */
+    /** Floating-nav item ids must be non-zero; BrowseSection ids start at 0. */
     private static final int ITEM_ID_OFFSET = 1_000_000;
     private static final int SCROLL_END_THRESHOLD_ITEMS = 6;
     /**
@@ -115,7 +117,7 @@ public class MobileBrowseActivity extends MobileActivity
      * (one /browse, ~0.2-0.5 s) lands before the reader reaches the end. See HomeSectionPacer.
      */
     private static final int NEAR_END_LOOKAHEAD_ITEMS = 16;
-    /** BottomNavigationView hard-caps at this many items. */
+    /** The phone floating nav intentionally caps itself at this many destinations. */
     private static final int MAX_NAV_ITEMS = 5;
     /**
      * Menu item id of the synthetic "You" tab (account + extra sections + settings). Far above
@@ -157,7 +159,7 @@ public class MobileBrowseActivity extends MobileActivity
     private boolean mGridHiddenForSkeleton;
     private GridLayoutManager mLayoutManager;
     private VideoCardAdapter mAdapter;
-    private BottomNavigationView mBottomNav;
+    private ExpressiveFloatingNav mBottomNav;
     // "You" tab panel (account header + grouped section rows + Settings row; replaces the drawer).
     private View mYouPanel;
     private LinearLayout mYouRows;
@@ -174,8 +176,8 @@ public class MobileBrowseActivity extends MobileActivity
     private ImageView mErrorIcon;
     private TextView mErrorMessage;
     private MaterialButton mErrorAction;
-    private ImageButton mSearchButton;
-    private ImageButton mCastButton;
+    private MaterialButton mSearchButton;
+    private MaterialButton mCastButton;
     /** Process-wide cast session singleton; Browse only reads state + opens the picker. */
     private CastSessionManager mCastSessionManager;
 
@@ -229,8 +231,29 @@ public class MobileBrowseActivity extends MobileActivity
 
     @Override
     protected boolean shouldInsetContentForNavigationBar() {
-        // BottomNavigationView paints through the gesture area and applies that inset internally.
+        // Feed/You content intentionally paints through the floating nav and into the gesture area.
+        // The nav itself consumes the bottom system inset in setupBottomEdgeToEdge().
         return false;
+    }
+
+    @Override
+    protected void applyMobileSystemBars() {
+        super.applyMobileSystemBars();
+
+        // Browse is the one ordinary screen whose page should continue behind the floating nav and
+        // the gesture-navigation area. MobileActivity still applies the top/side safe insets, so
+        // status-bar/cutout content remains safe.
+        if (Build.VERSION.SDK_INT >= 30) {
+            getWindow().setDecorFitsSystemWindows(false);
+        } else {
+            int flags = getWindow().getDecorView().getSystemUiVisibility();
+            flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            getWindow().getDecorView().setSystemUiVisibility(flags);
+        }
+        getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= 29) {
+            getWindow().setNavigationBarContrastEnforced(false);
+        }
     }
 
     @Override
@@ -289,6 +312,7 @@ public class MobileBrowseActivity extends MobileActivity
         setupSwipeRefresh();
         mBottomNav = findViewById(R.id.mobile_bottom_nav);
         mYouPanel = findViewById(R.id.mobile_you_panel);
+        setupBottomEdgeToEdge();
         mYouRows = findViewById(R.id.mobile_you_rows);
         mYouAccountText = findViewById(R.id.mobile_you_account_text);
         mYouAccountSub = findViewById(R.id.mobile_you_account_sub);
@@ -310,6 +334,67 @@ public class MobileBrowseActivity extends MobileActivity
         setupMiniPlayerBar();
         // NEWTUBE(mini-inset): the last card can scroll clear of the docked mini-player.
         com.newtube.mobile.ui.playback.MiniPlayerListInset.attach(mMiniPlayerBar, mContentGrid);
+    }
+
+    /**
+     * The feed viewport reaches the physical bottom; only the floating navigation is lifted above
+     * the system gesture area. Extra list/You padding supplies scroll range so the final content
+     * can clear the overlay, while clipToPadding=false keeps content visibly flowing underneath it.
+     */
+    private void setupBottomEdgeToEdge() {
+        View root = findViewById(R.id.mobile_browse_root);
+        if (root == null || mBottomNav == null || mContentGrid == null || mYouPanel == null) {
+            return;
+        }
+
+        final int gridBaseBottom = mContentGrid.getPaddingBottom();
+        final int youBaseBottom = mYouPanel.getPaddingBottom();
+
+        ViewGroup.LayoutParams rawParams = mBottomNav.getLayoutParams();
+        final int navBaseMargin;
+        if (rawParams instanceof ViewGroup.MarginLayoutParams) {
+            navBaseMargin = ((ViewGroup.MarginLayoutParams) rawParams).bottomMargin;
+        } else {
+            navBaseMargin = 0;
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets system = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout());
+            int bottomInset = system.bottom;
+
+            ViewGroup.LayoutParams params = mBottomNav.getLayoutParams();
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams margins = (ViewGroup.MarginLayoutParams) params;
+                int wanted = navBaseMargin + bottomInset;
+                if (margins.bottomMargin != wanted) {
+                    margins.bottomMargin = wanted;
+                    mBottomNav.setLayoutParams(margins);
+                }
+            }
+
+            int navHeight = mBottomNav.getLayoutParams().height;
+            if (navHeight < 0) {
+                navHeight = Math.round(64f * getResources().getDisplayMetrics().density);
+            }
+            int overlay = navHeight + navBaseMargin + bottomInset;
+
+            mContentGrid.setPadding(
+                    mContentGrid.getPaddingLeft(),
+                    mContentGrid.getPaddingTop(),
+                    mContentGrid.getPaddingRight(),
+                    gridBaseBottom + overlay);
+
+            mYouPanel.setPadding(
+                    mYouPanel.getPaddingLeft(),
+                    mYouPanel.getPaddingTop(),
+                    mYouPanel.getPaddingRight(),
+                    youBaseBottom + overlay);
+
+            return windowInsets;
+        });
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void setupSwipeRefresh() {
@@ -512,8 +597,8 @@ public class MobileBrowseActivity extends MobileActivity
 
     @Override
     public int getMiniCardBottomOffsetPx() {
-        // The card floats above the 56dp Material bottom-nav row (see activity_mobile_browse.xml).
-        return Math.round(56 * getResources().getDisplayMetrics().density);
+        // 64dp floating nav + 12dp breathing room above it.
+        return Math.round(76 * getResources().getDisplayMetrics().density);
     }
 
     /**
@@ -843,17 +928,19 @@ public class MobileBrowseActivity extends MobileActivity
         boolean connecting = mCastSessionManager != null && mCastSessionManager.isConnecting();
         if (connecting != mCastIconAnimating) {
             mCastIconAnimating = connecting;
-            mCastButton.setImageResource(connecting
+            mCastButton.setIconResource(connecting
                     ? R.drawable.ic_mobile_cast_connecting : R.drawable.ic_mobile_cast);
-            Drawable drawable = mCastButton.getDrawable();
+            Drawable drawable = mCastButton.getIcon();
             if (connecting && drawable instanceof AnimationDrawable) {
                 ((AnimationDrawable) drawable).start();
             }
         }
         if (mCastSessionManager != null && mCastSessionManager.isConnected()) {
-            mCastButton.setColorFilter(getColorInt(R.color.mobile_color_cast_active));
+            mCastButton.setIconTint(android.content.res.ColorStateList.valueOf(
+                    getColorInt(R.color.mobile_color_cast_active)));
         } else {
-            mCastButton.clearColorFilter();
+            mCastButton.setIconTint(android.content.res.ColorStateList.valueOf(
+                    getColorInt(R.color.mobile_color_on_surface)));
         }
     }
 
@@ -914,23 +1001,24 @@ public class MobileBrowseActivity extends MobileActivity
     }
 
     private void setupBottomNav() {
-        mBottomNav.setOnItemSelectedListener(item -> {
+        mBottomNav.setOnItemSelectedListener(itemId -> {
             if (!mSuppressNavCallback) {
-                onNavItemChosen(item.getItemId());
+                Haptics.tick(mBottomNav);
+                onNavItemChosen(itemId);
             }
-            return true;
         });
         // NEWTUBE(motion): tapping the tab you are on glides a scrolled feed back to the top, like
         // YouTube; at the top it does what it always did (repaint + refresh the section).
-        mBottomNav.setOnItemReselectedListener(item -> {
+        mBottomNav.setOnItemReselectedListener(itemId -> {
             if (mSuppressNavCallback) {
                 return;
             }
-            if (item.getItemId() != YOU_ITEM_ID && mContentGrid != null
+            View selected = mBottomNav.findViewById(itemId);
+            if (itemId != YOU_ITEM_ID && mContentGrid != null
                     && mContentGrid.getVisibility() == View.VISIBLE && mContentGrid.canScrollVertically(-1)) {
                 smoothScrollGridToTop();
             } else {
-                onNavItemChosen(item.getItemId());
+                onNavItemChosen(itemId);
             }
         });
     }
@@ -1008,7 +1096,7 @@ public class MobileBrowseActivity extends MobileActivity
         mErrorContainer.setImportantForAccessibility(a11y);
 
         boolean subScreen = mSectionFromYou && !mYouShowing
-                && mBottomNav.getMenu().findItem(toMenuItemId(mCurrentSectionId)) == null;
+                && !mBottomNav.containsItem(toMenuItemId(mCurrentSectionId));
         mTopBar.show(subScreen, getCurrentSectionTitle());
     }
 
@@ -1066,27 +1154,34 @@ public class MobileBrowseActivity extends MobileActivity
             (isPersonalSection(section.getId()) ? personal : explore).add(section);
         }
 
+        int personalStart = mYouRows.getChildCount();
         for (BrowseSection section : personal) {
             addYouSectionRow(section);
         }
+        styleYouGroup(personalStart, mYouRows.getChildCount());
 
         if (!pinned.isEmpty()) {
             addYouGroupLabel(getString(R.string.mobile_you_pinned));
+            int pinnedStart = mYouRows.getChildCount();
             for (BrowseSection section : pinned) {
                 addYouSectionRow(section);
             }
+            styleYouGroup(pinnedStart, mYouRows.getChildCount());
         }
 
         if (!explore.isEmpty()) {
             addYouGroupLabel(getString(R.string.mobile_you_explore));
+            int exploreStart = mYouRows.getChildCount();
             for (BrowseSection section : explore) {
                 addYouSectionRow(section);
             }
+            styleYouGroup(exploreStart, mYouRows.getChildCount());
         }
 
         addYouDivider();
-        addYouRow(R.drawable.ic_mobile_settings, getString(R.string.header_settings),
+        View settingsRow = addYouRow(R.drawable.ic_mobile_settings, getString(R.string.header_settings),
                 this::openSettings);
+        settingsRow.setBackgroundResource(R.drawable.bg_mobile_group_single);
     }
 
     private void addYouSectionRow(BrowseSection section) {
@@ -1098,11 +1193,37 @@ public class MobileBrowseActivity extends MobileActivity
             onYouPanelToggled(); // now that the chosen section is current: its name in the top bar
         });
         row.setOnLongClickListener(v -> {
+            Haptics.longPress(v);
             if (mPresenter != null) {
                 mPresenter.onSectionLongPressed(sectionId);
             }
             return true;
         });
+    }
+
+    /**
+     * Connected M3 list geometry, matching VIVI's leading/middle/end rhythm instead of giving
+     * every item a separate large-radius card.
+     */
+    private void styleYouGroup(int startInclusive, int endExclusive) {
+        int count = endExclusive - startInclusive;
+        if (count <= 0) {
+            return;
+        }
+        for (int i = 0; i < count; i++) {
+            View row = mYouRows.getChildAt(startInclusive + i);
+            int background;
+            if (count == 1) {
+                background = R.drawable.bg_mobile_group_single;
+            } else if (i == 0) {
+                background = R.drawable.bg_mobile_group_first;
+            } else if (i == count - 1) {
+                background = R.drawable.bg_mobile_group_last;
+            } else {
+                background = R.drawable.bg_mobile_group_middle;
+            }
+            row.setBackgroundResource(background);
+        }
     }
 
     /** Small secondary-color group label, official-You-page style. */
@@ -1136,18 +1257,15 @@ public class MobileBrowseActivity extends MobileActivity
 
     /** A dot on the You tab while there is an update the user hasn't opened yet. */
     private void refreshUpdateBadge() {
-        if (mBottomNav.getMenu().findItem(YOU_ITEM_ID) == null) {
+        if (!mBottomNav.containsItem(YOU_ITEM_ID)) {
             return;
         }
 
-        if (AppUpdates.instance(this).hasUnseenUpdate()) {
-            BadgeDrawable badge = mBottomNav.getOrCreateBadge(YOU_ITEM_ID);
-            badge.setBackgroundColor(getColorInt(R.color.mobile_color_primary));
-            badge.setContentDescriptionNumberless(getString(R.string.mobile_update_row_available));
-            badge.setVisible(true);
-        } else {
-            mBottomNav.removeBadge(YOU_ITEM_ID);
-        }
+        boolean visible = AppUpdates.instance(this).hasUnseenUpdate();
+        mBottomNav.setBadgeVisible(
+                YOU_ITEM_ID,
+                visible,
+                visible ? getString(R.string.mobile_update_row_available) : null);
     }
 
     private void addYouUpdateRow() {
@@ -1201,7 +1319,7 @@ public class MobileBrowseActivity extends MobileActivity
     private void addYouGroupLabel(CharSequence text) {
         TextView label = new TextView(this);
         label.setText(text);
-        label.setTextColor(getColorInt(R.color.mobile_color_on_surface_secondary));
+        label.setTextColor(getColorInt(R.color.mobile_m3_primary));
         label.setTextSize(14);
         label.setTypeface(label.getTypeface(), android.graphics.Typeface.BOLD);
         int pad = Math.round(20 * getResources().getDisplayMetrics().density);
@@ -1233,7 +1351,11 @@ public class MobileBrowseActivity extends MobileActivity
         TextView label = row.findViewById(R.id.mobile_you_row_label);
         label.setText(title);
 
-        row.setOnClickListener(v -> action.run());
+        row.setOnClickListener(v -> {
+            Haptics.click(v);
+            Motion.tap(v);
+            action.run();
+        });
         mYouRows.addView(row);
         return row;
     }
@@ -1329,7 +1451,7 @@ public class MobileBrowseActivity extends MobileActivity
     private void syncNavHighlight(int sectionId) {
         int itemId = toMenuItemId(sectionId);
 
-        if (mBottomNav.getMenu().findItem(itemId) != null && mBottomNav.getSelectedItemId() != itemId) {
+        if (mBottomNav.containsItem(itemId) && mBottomNav.getSelectedItemId() != itemId) {
             mSuppressNavCallback = true;
             mBottomNav.setSelectedItemId(itemId);
             mSuppressNavCallback = false;
@@ -1615,7 +1737,6 @@ public class MobileBrowseActivity extends MobileActivity
     }
 
     private void rebuildBottomNav() {
-        Menu menu = mBottomNav.getMenu();
         List<BrowseSection> navSections = selectNavSections();
 
         StringBuilder signature = new StringBuilder();
@@ -1626,10 +1747,10 @@ public class MobileBrowseActivity extends MobileActivity
         }
         String newSignature = signature.toString();
 
-        if (newSignature.equals(mNavSignature) && menu.size() == navSections.size() + 1) {
-            // Same tabs as on screen: only re-assert the highlight (the section may have moved).
+        if (newSignature.equals(mNavSignature) && mBottomNav.getItemCount() == navSections.size() + 1) {
+            // Same destinations as on screen: only re-assert the highlight.
             mSuppressNavCallback = true;
-            reassertNavHighlight(menu, false);
+            reassertNavHighlight(false);
             mSuppressNavCallback = false;
             return;
         }
@@ -1637,25 +1758,27 @@ public class MobileBrowseActivity extends MobileActivity
 
         mSuppressNavCallback = true;
 
-        menu.clear();
-
-        for (int i = 0; i < navSections.size(); i++) {
-            BrowseSection section = navSections.get(i);
-
-            android.view.MenuItem item = menu.add(Menu.NONE, toMenuItemId(section.getId()), i, section.getTitle());
-
+        List<ExpressiveFloatingNav.Item> items = new ArrayList<>();
+        for (BrowseSection section : navSections) {
             int icon = navIconOrResFor(section);
             if (icon > 0) {
-                item.setIcon(icon);
+                items.add(new ExpressiveFloatingNav.Item(
+                        toMenuItemId(section.getId()),
+                        section.getTitle(),
+                        icon));
             }
         }
 
         // The synthetic You tab always sits last (account + extra sections + settings).
-        menu.add(Menu.NONE, YOU_ITEM_ID, navSections.size(), R.string.mobile_nav_you)
-                .setIcon(R.drawable.ic_nav_you);
+        items.add(new ExpressiveFloatingNav.Item(
+                YOU_ITEM_ID,
+                getString(R.string.mobile_nav_you),
+                R.drawable.ic_nav_you));
 
-        // Re-assert the highlight after clear()/add() wiped it, so the current tab stays lit.
-        reassertNavHighlight(menu, true);
+        mBottomNav.setItems(items);
+
+        // Re-assert the highlight after rebuilding the child views.
+        reassertNavHighlight(true);
 
         mSuppressNavCallback = false;
 
@@ -1663,14 +1786,14 @@ public class MobileBrowseActivity extends MobileActivity
 
         // Long-press on a section tab opens the section-management menu (Refresh / Rename /
         // Move / Mark watched / Clear history, ...) - the touch equivalent of the TV D-pad
-        // section long-press, formerly the drawer rows' "..." overflow. Item views exist only
-        // after the menu inflates into the bar, hence the post.
+        // section long-press, formerly the drawer rows' overflow action.
         mBottomNav.post(() -> {
             for (BrowseSection section : navSections) {
                 View itemView = mBottomNav.findViewById(toMenuItemId(section.getId()));
                 if (itemView != null) {
                     int sectionId = section.getId();
                     itemView.setOnLongClickListener(v -> {
+                        Haptics.longPress(v);
                         if (mPresenter != null) {
                             mPresenter.onSectionLongPressed(sectionId);
                         }
@@ -1681,12 +1804,13 @@ public class MobileBrowseActivity extends MobileActivity
         });
     }
 
-    /** Callers hold {@link #mSuppressNavCallback}. {@code force}: the menu was just rebuilt. */
-    private void reassertNavHighlight(Menu menu, boolean force) {
+    /** Callers hold {@link #mSuppressNavCallback}. {@code force}: the nav was just rebuilt. */
+    private void reassertNavHighlight(boolean force) {
         int itemId;
         if (mYouShowing) {
             itemId = YOU_ITEM_ID;
-        } else if (mCurrentSectionId >= 0 && menu.findItem(toMenuItemId(mCurrentSectionId)) != null) {
+        } else if (mCurrentSectionId >= 0
+                && mBottomNav.containsItem(toMenuItemId(mCurrentSectionId))) {
             itemId = toMenuItemId(mCurrentSectionId);
         } else {
             return;
@@ -1973,7 +2097,7 @@ public class MobileBrowseActivity extends MobileActivity
             // A section with its own tab re-lights that tab; one opened from a You row has none,
             // so the restored You highlight is the right one to keep.
             syncNavHighlight(mCurrentSectionId);
-            if (!mSectionFromYou && mBottomNav.getMenu().findItem(toMenuItemId(mCurrentSectionId)) == null) {
+            if (!mSectionFromYou && !mBottomNav.containsItem(toMenuItemId(mCurrentSectionId))) {
                 // A section without a tab that is no longer a You sub-screen: nothing may stay lit
                 // on You over it; fall back to Home's tab like a fresh start.
                 syncNavHighlight(MediaGroup.TYPE_HOME);
@@ -2002,7 +2126,7 @@ public class MobileBrowseActivity extends MobileActivity
         // Home itself exits.
         if (mYouShowing || mCurrentSectionId != MediaGroup.TYPE_HOME) {
             int homeItemId = toMenuItemId(MediaGroup.TYPE_HOME);
-            if (mBottomNav.getMenu().findItem(homeItemId) != null) {
+            if (mBottomNav.containsItem(homeItemId)) {
                 mBottomNav.setSelectedItemId(homeItemId); // listener hides the panel + loads Home
                 return;
             }

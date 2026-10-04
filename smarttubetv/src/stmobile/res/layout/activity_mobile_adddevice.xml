@@ -43,7 +43,8 @@
             android:paddingEnd="16dp"
             android:text="@string/mobile_add_device_title"
             android:textColor="@color/mobile_color_on_surface"
-            android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
@@ -93,7 +94,9 @@
                     android:layout_marginTop="24dp"
                     app:cardBackgroundColor="@color/mobile_color_placeholder"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp">
+                    app:cardElevation="0dp"
+        app:strokeColor="@android:color/transparent"
+        app:strokeWidth="0dp">
 
                     <TextView
                         android:id="@+id/mobile_add_device_code"

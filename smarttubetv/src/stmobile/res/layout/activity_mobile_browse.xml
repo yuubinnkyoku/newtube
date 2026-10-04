@@ -18,16 +18,17 @@
     <!-- NEWTUBE(you-subscreen): back arrow shown (with the section's name in the title bar) only
          while a section opened from a You row is on screen - BrowseTopBar. GONE otherwise, and a
          GONE view collapses to a point at the start, so the wordmark keeps its 16dp inset. -->
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/mobile_title_back"
-        android:layout_width="48dp"
-        android:layout_height="@dimen/mobile_title_bar_height"
+        style="?attr/materialIconButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/mobile_dialog_back"
-        android:padding="12dp"
-        android:src="@drawable/ic_mobile_back_arrow"
         android:visibility="gone"
+        app:icon="@drawable/ic_mobile_back_arrow"
+        app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall"
+        app:layout_constraintBottom_toBottomOf="@id/mobile_title_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,35 +43,50 @@
         android:paddingStart="16dp"
         android:text="@string/app_name"
         android:textColor="@color/mobile_color_on_surface"
-        android:textAppearance="@style/TextAppearance.Material3.TitleLarge.Emphasized"
-        app:layout_constraintEnd_toStartOf="@id/mobile_cast_button"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/mobile_title_actions"
         app:layout_constraintStart_toEndOf="@id/mobile_title_back"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Cast picker entry on the home feed, like the official app's top bar. Tinted with the
-         accent while a session is connected (MobileBrowseActivity.updateCastIconTint). -->
-    <ImageButton
-        android:id="@+id/mobile_cast_button"
-        android:layout_width="48dp"
+    <!--
+         NEWTUBE(m3e): Top-bar actions are one vertically-centered group, matching the way
+         Compose TopAppBar actions are laid out in apps such as VIVI Music / PixelPlayer.
+         Do not force expressive icon buttons to 48dp: their style already provides the
+         48dp touch target and centers the smaller visual container using insets.
+    -->
+    <LinearLayout
+        android:id="@+id/mobile_title_actions"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/mobile_title_bar_height"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/mobile_cast_button"
-        android:padding="12dp"
-        android:src="@drawable/ic_mobile_cast"
-        app:layout_constraintEnd_toStartOf="@id/mobile_search_button"
-        app:layout_constraintTop_toTopOf="@id/mobile_title_bar" />
-
-    <ImageButton
-        android:id="@+id/mobile_search_button"
-        android:layout_width="48dp"
-        android:layout_height="@dimen/mobile_title_bar_height"
-        android:layout_marginEnd="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/mobile_search_button"
-        android:padding="12dp"
-        android:src="@drawable/ic_mobile_search"
+        android:layout_marginEnd="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/mobile_title_bar" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mobile_cast_button"
+            style="?attr/materialIconButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/mobile_cast_button"
+            app:icon="@drawable/ic_mobile_cast"
+            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mobile_search_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:contentDescription="@string/mobile_search_button"
+            app:backgroundTint="@color/mobile_m3_surface_container_high"
+            app:icon="@drawable/ic_mobile_search"
+            app:iconTint="@color/mobile_color_on_surface"
+            app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.IconButton.Small.Square" />
+
+    </LinearLayout>
 
     <!-- Pull-to-refresh drives BrowsePresenter.refresh() - also the natural retry
          gesture when a section shows the error placeholder (the error overlay doesn't
@@ -79,7 +95,7 @@
         android:id="@+id/mobile_content_swipe"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mobile_title_bar">
@@ -101,7 +117,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mobile_title_bar" />
@@ -123,7 +139,7 @@
         android:orientation="vertical"
         android:padding="24dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mobile_title_bar">
@@ -162,8 +178,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/mobile_color_background"
+        android:clipToPadding="false"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mobile_title_bar"
@@ -184,18 +201,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="12dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/bg_mobile_account_card"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bg_mobile_group_single"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="20dp">
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp">
 
                 <ImageView
                     android:id="@+id/mobile_you_avatar"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:contentDescription="@null"
                     android:src="@drawable/ic_mobile_account" />
 
@@ -213,8 +231,9 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/dialog_add_account"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge.Emphasized"
-                        android:textColor="@color/mobile_color_on_surface" />
+                        android:textColor="@color/mobile_color_on_surface"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/mobile_you_account_sub"
@@ -223,8 +242,8 @@
                         android:layout_marginTop="2dp"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                         android:textColor="@color/mobile_color_on_surface_secondary"
+                        android:textSize="14sp"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -274,8 +293,10 @@
         android:focusable="true"
         android:visibility="gone"
         app:cardBackgroundColor="@android:color/black"
-        app:cardCornerRadius="@dimen/mobile_shape_large_increased"
+        app:cardCornerRadius="20dp"
         app:cardElevation="8dp"
+        app:strokeColor="@android:color/transparent"
+        app:strokeWidth="0dp"
         app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         tools:visibility="visible">
@@ -340,16 +361,26 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- M3 Expressive navigation bar: 64dp container, semantic selected indicator, expressive
-         state motion and type are supplied by MDC 1.14. The gesture inset remains delegated to
-         the component so the container paints to the display edge without shrinking its content. -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <!-- Matched against the real YouTube app on a Pixel 9 (2026-07): their icon/label row
+         measures ~51dp with 24dp icons and ~10sp labels, content centered, gesture inset
+         absorbed below. Stock M2 wrap_content (56dp row) is the closest the widget allows;
+         the view pads itself by the gesture-navigation inset (paddingBottomSystemWindowInsets)
+         so the bar paints through to the display edge without squeezing the row. -->
+    <!--
+         Expressive floating navigation: one suspended pill instead of a full-width M2-era bar.
+         Only the active destination exposes its label; selection itself is animated in code.
+    -->
+    <com.newtube.mobile.ui.browse.ExpressiveFloatingNav
         android:id="@+id/mobile_bottom_nav"
-        style="@style/Widget.Material3Expressive.BottomNavigationView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:labelVisibilityMode="labeled"
-        app:paddingBottomSystemWindowInsets="true"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_mobile_floating_nav"
+        android:clipToOutline="true"
+        android:elevation="6dp"
+        android:paddingHorizontal="6dp"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

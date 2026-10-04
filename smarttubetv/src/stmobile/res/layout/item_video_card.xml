@@ -18,7 +18,9 @@
     android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@android:color/transparent"
     app:cardCornerRadius="0dp"
-    app:cardElevation="0dp">
+    app:cardElevation="0dp"
+    app:strokeColor="@android:color/transparent"
+    app:strokeWidth="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -33,6 +35,8 @@
             app:cardBackgroundColor="@color/mobile_color_placeholder"
             app:cardCornerRadius="@dimen/mobile_card_corner_radius"
             app:cardElevation="0dp"
+            app:strokeColor="@android:color/transparent"
+            app:strokeWidth="0dp"
             app:layout_constraintDimensionRatio="16:9"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -83,10 +87,11 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="4dp"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:fontFamily="sans-serif-medium"
             android:lineSpacingExtra="2sp"
             android:maxLines="2"
             android:textColor="@color/mobile_color_on_surface"
+            android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@+id/video_overflow"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/video_thumbnail_frame"
@@ -117,7 +122,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/mobile_color_on_surface_secondary"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/video_overflow"
             app:layout_constraintStart_toStartOf="parent"

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mobile-only labels that had no Japanese override and leaked English into an otherwise
+         Japanese UI. Shared resources can be overridden by the app/flavor resource set. -->
+    <string name="mobile_nav_you">マイページ</string>
+    <string name="mobile_you_explore">見つける</string>
+    <string name="mobile_you_pinned">固定</string>
+    <string name="header_downloads">ダウンロード</string>
+    <string name="header_live">ライブ</string>
+
+    <string name="mobile_update_row_available">アップデートがあります</string>
+    <string name="mobile_update_row_downloading">アップデートをダウンロード中</string>
+    <string name="mobile_update_row_ready">インストールできます</string>
+    <string name="mobile_update_downloaded">アップデートをダウンロードしました</string>
+    <string name="mobile_update_whats_new">新機能</string>
+</resources>

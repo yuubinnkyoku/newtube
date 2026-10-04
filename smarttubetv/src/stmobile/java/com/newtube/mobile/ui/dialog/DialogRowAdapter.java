@@ -1,20 +1,27 @@
 package com.newtube.mobile.ui.dialog;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.RadioButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.radiobutton.MaterialRadioButton;
+import com.google.android.material.shape.ShapeAppearanceModel;
+
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionCategory;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionItem;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.newtube.mobile.ui.common.Haptics;
+import com.newtube.mobile.ui.common.Motion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +37,7 @@ import java.util.Map;
  * for the authoritative TV enumeration this mirrors):
  * <ul>
  *     <li>{@code TYPE_SINGLE_BUTTON} -> one clickable row (plain action item).</li>
- *     <li>{@code TYPE_SINGLE_SWITCH} -> one row with a trailing {@link SwitchMaterial} (boolean setting).</li>
+ *     <li>{@code TYPE_SINGLE_SWITCH} -> one row with a trailing {@link MaterialSwitch} (boolean setting).</li>
  *     <li>{@code TYPE_RADIO_LIST} -> an optional header row + one radio row per option
  *     (single-select; unlike the TV {@code ListPreference} popup, selections render inline -
  *     no extra navigation level).</li>
@@ -208,7 +215,9 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof HeaderViewHolder) {
             ((HeaderViewHolder) holder).bind(row);
         } else if (holder instanceof RowViewHolder) {
-            ((RowViewHolder) holder).bind(row, mListener);
+            boolean firstInGroup = position == 0 || mRows.get(position - 1).viewType == TYPE_HEADER;
+            boolean lastInGroup = position == mRows.size() - 1 || mRows.get(position + 1).viewType == TYPE_HEADER;
+            ((RowViewHolder) holder).bind(row, mListener, firstInGroup, lastInGroup);
         }
     }
 
@@ -263,9 +272,10 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static class RowViewHolder extends RecyclerView.ViewHolder {
         private final TextView title;
         private final TextView subtitle;
-        private final RadioButton radio;
-        private final CheckBox checkbox;
-        private final SwitchMaterial switchControl;
+        private final MaterialRadioButton radio;
+        private final MaterialCheckBox checkbox;
+        private final MaterialSwitch switchControl;
+        private final ImageView chevron;
 
         RowViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -274,9 +284,11 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             radio = itemView.findViewById(R.id.dialog_row_radio);
             checkbox = itemView.findViewById(R.id.dialog_row_checkbox);
             switchControl = itemView.findViewById(R.id.dialog_row_switch);
+            chevron = itemView.findViewById(R.id.dialog_row_chevron);
         }
 
-        void bind(Row row, Listener listener) {
+        void bind(Row row, Listener listener, boolean firstInGroup, boolean lastInGroup) {
+            applyGroupedShape(firstInGroup, lastInGroup);
             title.setText(sizeInlineIcons(row.title, title));
 
             if (row.subtitle != null && row.subtitle.length() > 0) {
@@ -289,6 +301,7 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             radio.setVisibility(View.GONE);
             checkbox.setVisibility(View.GONE);
             switchControl.setVisibility(View.GONE);
+            chevron.setVisibility(View.GONE);
             switchControl.setOnCheckedChangeListener(null);
             itemView.setOnClickListener(null);
 
@@ -299,30 +312,81 @@ class DialogRowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             switch (row.viewType) {
                 case TYPE_BUTTON:
-                    itemView.setOnClickListener(v -> listener.onButtonClicked(row.item));
+                    chevron.setVisibility(View.VISIBLE);
+                    itemView.setOnClickListener(v -> {
+                        Haptics.click(v);
+                        Motion.tap(v);
+                        listener.onButtonClicked(row.item);
+                    });
                     break;
                 case TYPE_RADIO:
                     radio.setVisibility(View.VISIBLE);
                     radio.setChecked(row.checked);
-                    itemView.setOnClickListener(v -> listener.onRadioClicked(row.category, row.item));
+                    itemView.setOnClickListener(v -> {
+                        Haptics.tick(v);
+                        Motion.tap(v);
+                        listener.onRadioClicked(row.category, row.item);
+                    });
                     break;
                 case TYPE_CHECKBOX:
                     checkbox.setVisibility(View.VISIBLE);
                     checkbox.setChecked(row.checked);
-                    itemView.setOnClickListener(v -> listener.onCheckboxClicked(row.category, row.item));
+                    itemView.setOnClickListener(v -> {
+                        Haptics.tick(v);
+                        Motion.tap(v);
+                        listener.onCheckboxClicked(row.category, row.item);
+                    });
                     break;
                 case TYPE_SWITCH:
                     switchControl.setVisibility(View.VISIBLE);
                     switchControl.setChecked(row.checked);
                     switchControl.setOnCheckedChangeListener(
                             (buttonView, isChecked) -> listener.onSwitchToggled(row.item, isChecked));
-                    itemView.setOnClickListener(v -> switchControl.setChecked(!switchControl.isChecked()));
+                    itemView.setOnClickListener(v -> {
+                        Haptics.tick(v);
+                        Motion.tap(v);
+                        switchControl.setChecked(!switchControl.isChecked());
+                    });
                     break;
                 case TYPE_TEXT:
                 default:
                     // Read-only - no click handling.
                     break;
             }
+        }
+
+        private void applyGroupedShape(boolean first, boolean last) {
+            if (!(itemView instanceof MaterialCardView)) {
+                return;
+            }
+
+            // Use the M3 shape scale rather than baking dp values into the component.
+            // In the expressive theme these currently resolve to 20dp (Large Increased)
+            // and 4dp (Extra Small), and keep following the library if the token set evolves.
+            float outer = resolveShapeSize(
+                    com.google.android.material.R.attr.shapeCornerSizeLargeIncreased, 20f);
+            float connected = resolveShapeSize(
+                    com.google.android.material.R.attr.shapeCornerSizeExtraSmall, 4f);
+            float top = first ? outer : connected;
+            float bottom = last ? outer : connected;
+
+            ShapeAppearanceModel shape = new ShapeAppearanceModel.Builder()
+                    .setTopLeftCornerSize(top)
+                    .setTopRightCornerSize(top)
+                    .setBottomLeftCornerSize(bottom)
+                    .setBottomRightCornerSize(bottom)
+                    .build();
+            ((MaterialCardView) itemView).setShapeAppearanceModel(shape);
+        }
+
+        private float resolveShapeSize(int attr, float fallbackDp) {
+            TypedValue value = new TypedValue();
+            if (itemView.getContext().getTheme().resolveAttribute(attr, value, true)
+                    && value.type == TypedValue.TYPE_DIMENSION) {
+                return TypedValue.complexToDimension(
+                        value.data, itemView.getResources().getDisplayMetrics());
+            }
+            return fallbackDp * itemView.getResources().getDisplayMetrics().density;
         }
     }
 }

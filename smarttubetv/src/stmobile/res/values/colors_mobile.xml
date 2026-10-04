@@ -1,97 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- NEWTUBE(m3e): semantic Material 3 Expressive light scheme. The brand stays red, but
-         components now have the complete role set needed by MDC 1.14's M3 Expressive widgets
-         instead of deriving every state from black/white. -->
-    <color name="mobile_color_primary">#B3261E</color>
-    <color name="mobile_color_on_primary">#FFFFFF</color>
-    <color name="mobile_color_primary_container">#F9DEDC</color>
-    <color name="mobile_color_on_primary_container">#410E0B</color>
-    <color name="mobile_color_primary_inverse">#FFB4AB</color>
-    <color name="mobile_color_primary_fixed">#FFDAD6</color>
-    <color name="mobile_color_primary_fixed_dim">#FFB4AB</color>
-    <color name="mobile_color_on_primary_fixed">#410002</color>
-    <color name="mobile_color_on_primary_fixed_variant">#93000A</color>
-    <color name="mobile_color_primary_dark">#8C1D18</color>
+    <!-- NEWTUBE(theme): these are the LIGHT values; values-night/colors_mobile.xml holds the dark
+         ones (the palette the app shipped before the Theme setting, unchanged). A colour with no
+         night entry is the same in both themes: the accent, and everything drawn over pictures. -->
+    <color name="mobile_color_primary">#FF0000</color>
+    <!-- NEWTUBE(m3e): Material 3 Expressive role palette. Playback/progress keeps the
+         stronger YouTube red above; component surfaces use softer tonal roles. -->
+    <color name="mobile_m3_primary">#B32648</color>
+    <color name="mobile_m3_on_primary">#FFFFFF</color>
+    <color name="mobile_m3_primary_container">#FFD9DF</color>
+    <color name="mobile_m3_on_primary_container">#3F0010</color>
+    <color name="mobile_m3_secondary">#A7354F</color>
+    <color name="mobile_m3_on_secondary">#FFFFFF</color>
+    <color name="mobile_m3_secondary_container">#FFD9E1</color>
+    <color name="mobile_m3_on_secondary_container">#3F071A</color>
+    <color name="mobile_m3_tertiary">#00639B</color>
+    <color name="mobile_m3_on_tertiary">#FFFFFF</color>
+    <color name="mobile_m3_tertiary_container">#CDE5FF</color>
+    <color name="mobile_m3_on_tertiary_container">#001D33</color>
+    <color name="mobile_m3_surface_variant">#F4E7EA</color>
+    <color name="mobile_m3_on_surface_variant">#554347</color>
+    <color name="mobile_m3_surface_bright">#FFFFFF</color>
+    <color name="mobile_m3_surface_dim">#E4DADD</color>
+    <color name="mobile_m3_surface_container_lowest">#FFFFFF</color>
+    <color name="mobile_m3_surface_container_low">#FFF7F8</color>
+    <color name="mobile_m3_surface_container">#F9F0F2</color>
+    <color name="mobile_m3_surface_container_high">#F3EAEC</color>
+    <color name="mobile_m3_surface_container_highest">#EDE4E6</color>
+    <color name="mobile_m3_outline">#887276</color>
+    <color name="mobile_m3_outline_variant">#DBC0C5</color>
 
-    <color name="mobile_color_secondary">#775653</color>
-    <color name="mobile_color_on_secondary">#FFFFFF</color>
-    <color name="mobile_color_secondary_container">#FFDAD5</color>
-    <color name="mobile_color_on_secondary_container">#2C1512</color>
-    <color name="mobile_color_secondary_fixed">#FFDAD5</color>
-    <color name="mobile_color_secondary_fixed_dim">#E7BDB8</color>
-    <color name="mobile_color_on_secondary_fixed">#2C1512</color>
-    <color name="mobile_color_on_secondary_fixed_variant">#5D3F3B</color>
-
-    <color name="mobile_color_tertiary">#715B2E</color>
-    <color name="mobile_color_on_tertiary">#FFFFFF</color>
-    <color name="mobile_color_tertiary_container">#FBDFA6</color>
-    <color name="mobile_color_on_tertiary_container">#251A00</color>
-    <color name="mobile_color_tertiary_fixed">#FBDFA6</color>
-    <color name="mobile_color_tertiary_fixed_dim">#DEC48C</color>
-    <color name="mobile_color_on_tertiary_fixed">#251A00</color>
-    <color name="mobile_color_on_tertiary_fixed_variant">#574419</color>
-
-    <color name="mobile_color_background">#FFF8F7</color>
-    <color name="mobile_color_surface">#FFF8F7</color>
-    <color name="mobile_color_surface_dim">#E8D6D4</color>
-    <color name="mobile_color_surface_bright">#FFF8F7</color>
-    <color name="mobile_color_surface_container_lowest">#FFFFFF</color>
-    <color name="mobile_color_surface_container_low">#FFF0EE</color>
-    <color name="mobile_color_surface_container">#FCEAE8</color>
-    <color name="mobile_color_surface_container_high">#F6E4E2</color>
-    <color name="mobile_color_surface_container_highest">#F0DEDC</color>
-    <color name="mobile_color_surface_variant">#F5DDDA</color>
-    <color name="mobile_color_on_surface">#201A19</color>
-    <color name="mobile_color_on_surface_secondary">#534341</color>
-    <color name="mobile_color_outline">#857370</color>
-    <color name="mobile_color_outline_variant">#D8C2BE</color>
-    <color name="mobile_color_inverse_surface">#362F2E</color>
-    <color name="mobile_color_on_inverse_surface">#FBEDEA</color>
-
-    <color name="mobile_color_error">#BA1A1A</color>
-    <color name="mobile_color_on_error">#FFFFFF</color>
-    <color name="mobile_color_error_container">#FFDAD6</color>
-    <color name="mobile_color_on_error_container">#410002</color>
-    <color name="mobile_color_scrim">#000000</color>
-
-    <!-- Cast is a status, not the product accent. Keep the familiar blue connection cue. -->
+    <color name="mobile_color_primary_dark">#CC0000</color>
+    <!-- Cast: the only place the app tints an icon to show a live connection. Was the stock
+         Material pink (#FF4081) inherited from the theme's colorAccent, which leaked into
+         every checkbox, radio, caret and untinted spinner - see Theme.NewTube. -->
     <color name="mobile_color_cast_active">#065FD4</color>
-
-    <!-- Video/player roles. Red playback is intentionally brighter than the UI primary. -->
+    <color name="mobile_color_background">#FFFFFF</color>
+    <color name="mobile_color_surface">#FFFFFF</color>
+    <color name="mobile_color_on_surface">#0F0F0F</color>
+    <color name="mobile_color_on_surface_secondary">#606060</color>
     <color name="mobile_color_badge_bg">#CC000000</color>
     <color name="mobile_color_badge_live_bg">#CCD32F2F</color>
     <color name="mobile_color_progress_track">#33FFFFFF</color>
+    <!-- NEWTUBE(seek bar): YouTube's red since its 2024 refresh, the seek bar's played colour
+         (PlayerTimeBar.PLAYED_COLOR), so every progress line - watched bars on thumbnails, the
+         mini player's - matches the player's. -->
     <color name="mobile_color_progress">#FF0033</color>
-
-    <!-- App-specific aliases mapped onto the semantic M3 surface hierarchy. -->
-    <color name="mobile_color_placeholder">@color/mobile_color_surface_container_highest</color>
-    <color name="mobile_color_skeleton_highlight">@color/mobile_color_surface_container_lowest</color>
-    <color name="mobile_color_link">@color/mobile_color_primary</color>
+    <color name="mobile_color_placeholder">#E5E5E5</color>
+    <!-- NEWTUBE(motion): the light that sweeps over skeleton blocks (ShimmerLinearLayout). -->
+    <color name="mobile_color_skeleton_highlight">#F6F6F6</color>
+    <color name="mobile_color_link">#065FD4</color>
     <color name="mobile_color_qr_bg">#FFFFFF</color>
-    <color name="mobile_color_divider">@color/mobile_color_outline_variant</color>
-    <color name="mobile_color_pill">@color/mobile_color_surface_container_high</color>
-    <color name="mobile_color_subscribed_button">@color/mobile_color_secondary_container</color>
-    <color name="mobile_color_comment_parent">@color/mobile_color_surface_container_low</color>
-    <color name="mobile_color_comment_creator_pill">@color/mobile_color_secondary_container</color>
-    <color name="mobile_color_menu_surface">@color/mobile_color_surface_container</color>
-    <color name="mobile_color_comment_handle">@color/mobile_color_on_surface</color>
-    <color name="mobile_color_card">@color/mobile_color_surface_container</color>
-    <color name="mobile_color_inverse_ripple">#33FFFFFF</color>
-    <color name="mobile_color_track">@color/mobile_color_outline_variant</color>
-    <color name="mobile_color_field">@color/mobile_color_surface_container_high</color>
-    <color name="mobile_color_background_scrim">#CCFFF8F7</color>
+    <color name="mobile_color_divider">#1A000000</color>
+    <color name="mobile_color_pill">#0D000000</color>
+    <!-- Opaque equivalent of the translucent pill over #0F0F0F. MaterialButton flattens a
+         translucent background tint onto its white base, which made white "Subscribed" text
+         disappear into a white button on-device. -->
+    <color name="mobile_color_subscribed_button">#F2F2F2</color>
+    <!-- NEWTUBE(comments-panel): the comment a replies page is about, set apart from its replies. -->
+    <color name="mobile_color_comment_parent">#F2F2F2</color>
+    <!-- The creator's handle on their own comments, and the panel's Top / Newest menu. -->
+    <color name="mobile_color_comment_creator_pill">#14000000</color>
+    <color name="mobile_color_menu_surface">#FFFFFF</color>
+    <!-- A commenter's handle: brighter than the time beside it, quieter than the comment. -->
+    <color name="mobile_color_comment_handle">#2E2E2E</color>
 
-    <!-- Android 7-8.0 cannot draw dark nav buttons; values-v27 replaces this with the page color. -->
+    <!-- NEWTUBE(theme): tokens added with the light theme (night values in values-night). -->
+    <!-- A raised card on the page: the watch page's Comments / Live chat / queue cards. -->
+    <color name="mobile_color_card">#F2F2F2</color>
+    <!-- The app's one main-action pill ("Play all", "Subscribe", "Sign in"): white on the dark
+         page, near-black on the light one, like YouTube's. -->
+    <color name="mobile_color_inverse_surface">#0F0F0F</color>
+    <color name="mobile_color_on_inverse_surface">#FFFFFF</color>
+    <color name="mobile_color_inverse_ripple">#33FFFFFF</color>
+    <!-- The unfilled part of a progress bar on a page or sheet (not over a picture). -->
+    <color name="mobile_color_track">#1F000000</color>
+    <!-- Search box: a grey pill on the light top bar; the dark one keeps its old look. -->
+    <color name="mobile_color_field">#F2F2F2</color>
+    <!-- The page colour at 40%, for the playlist header's wash into the page. -->
+    <color name="mobile_color_background_scrim">#66FFFFFF</color>
+    <!-- The navigation bar. Black here: Android 7-8.0 can't draw dark navigation buttons, so a
+         white bar would hide them; values-v27 has the white one that matches the page. -->
     <color name="mobile_color_navigation_bar">#000000</color>
 
-    <!-- Shared edit dialogs. -->
-    <color name="dialog_bg_color">@color/mobile_color_surface_container_high</color>
-    <color name="dialog_text_color">@color/mobile_color_on_surface</color>
-    <color name="dialog_hint_color">@color/mobile_color_on_surface_secondary</color>
-    <color name="dialog_proxy_hint_color">@color/mobile_color_on_surface_secondary</color>
+    <!-- NEWTUBE(theme): the shared edit dialogs (SimpleEditDialog - new/rename playlist, passwords -
+         and WebProxyDialog) use the library's fixed dark AppDialog colours; the light side
+         overrides them here, values-night keeps the library's values. -->
+    <color name="dialog_bg_color">#FFFFFF</color>
+    <color name="dialog_text_color">#0F0F0F</color>
+    <color name="dialog_hint_color">#61000000</color>
+    <color name="dialog_proxy_hint_color">#8A000000</color>
 
-    <!-- Player chrome stays dark in both app themes. -->
+    <!-- NEWTUBE(theme): player chrome, the same in BOTH themes - the player stays dark like
+         YouTube's: controls and chips over the video, the mini player, the cast overlays. -->
     <color name="mobile_player_on_video">#FFFFFF</color>
     <color name="mobile_player_pill">#26FFFFFF</color>
     <color name="mobile_player_cast_active">#4FC3F7</color>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="48dp">
+
+    <View
+        android:id="@+id/mobile_floating_nav_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="2dp"
+        android:alpha="0"
+        android:background="@drawable/bg_mobile_floating_nav_indicator"
+        android:scaleX="0.4"
+        android:scaleY="1" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/mobile_floating_nav_button"
+        style="@style/Widget.NewTube.FloatingNav.Item"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:minWidth="0dp"
+        android:textAllCaps="false"
+        app:containerShapeDefault="@style/ShapeAppearance.Material3.Corner.Full"
+        app:containerShapePressed="@style/ShapeAppearance.Material3.Corner.Full"
+        app:containerShapeChecked="@style/ShapeAppearance.Material3.Corner.Full"
+        app:iconSize="20dp"
+        app:iconPadding="6dp"
+        app:materialSizeOverlay="@style/SizeOverlay.Material3Expressive.Button.Xsmall" />
+
+    <View
+        android:id="@+id/mobile_floating_nav_badge"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="6dp"
+        android:background="@drawable/bg_mobile_nav_badge"
+        android:visibility="gone" />
+
+</FrameLayout>

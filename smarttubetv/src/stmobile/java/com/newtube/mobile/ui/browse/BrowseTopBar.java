@@ -1,6 +1,7 @@
 package com.newtube.mobile.ui.browse;
 
 import android.app.Activity;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
@@ -13,6 +14,9 @@ import com.liskovsoft.smartyoutubetv2.tv.R;
  * no hint where the user was or that back returns to You.
  */
 final class BrowseTopBar {
+    private static final float WORDMARK_SP = 22f;
+    private static final float SUBSCREEN_TITLE_SP = 20f;
+
     private final TextView mTitle;
     private final View mBack;
     private final int mWordmarkInset;
@@ -35,9 +39,7 @@ final class BrowseTopBar {
         mBack.setVisibility(subScreen ? View.VISIBLE : View.GONE);
         mTitle.setText(subScreen && title != null && title.length() > 0
                 ? title : mTitle.getContext().getString(R.string.app_name));
-        mTitle.setTextAppearance(subScreen
-                ? R.style.TextAppearance_Material3_TitleLarge
-                : R.style.TextAppearance_Material3_TitleLarge_Emphasized);
+        mTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, subScreen ? SUBSCREEN_TITLE_SP : WORDMARK_SP);
         mTitle.setPaddingRelative(subScreen ? mBesideBackInset : mWordmarkInset,
                 mTitle.getPaddingTop(), mTitle.getPaddingEnd(), mTitle.getPaddingBottom());
     }

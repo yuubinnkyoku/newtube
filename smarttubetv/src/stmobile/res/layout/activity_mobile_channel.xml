@@ -48,7 +48,8 @@
             android:paddingEnd="16dp"
             android:text="@string/header_channels"
             android:textColor="@color/mobile_color_on_surface"
-            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textSize="18sp"
+            android:textStyle="bold"
             tools:text="Some Channel" />
 
     </LinearLayout>

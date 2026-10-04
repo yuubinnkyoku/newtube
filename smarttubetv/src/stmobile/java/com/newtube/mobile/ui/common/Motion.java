@@ -13,20 +13,7 @@ import android.view.animation.PathInterpolator;
  * reads as fast even at 250-300 ms.
  */
 public final class Motion {
-    // M3 Expressive spring tokens (Compose token set mirrored by MDC 1.14 Views resources).
-    // Spatial properties may overshoot; effects (alpha/color) are critically damped.
-    public static final float EXPRESSIVE_FAST_SPATIAL_STIFFNESS = 800f;
-    public static final float EXPRESSIVE_FAST_SPATIAL_DAMPING = 0.6f;
-    public static final float EXPRESSIVE_DEFAULT_SPATIAL_STIFFNESS = 380f;
-    public static final float EXPRESSIVE_DEFAULT_SPATIAL_DAMPING = 0.8f;
-    public static final float EXPRESSIVE_SLOW_SPATIAL_STIFFNESS = 200f;
-    public static final float EXPRESSIVE_SLOW_SPATIAL_DAMPING = 0.8f;
-    public static final float EXPRESSIVE_FAST_EFFECTS_STIFFNESS = 3800f;
-    public static final float EXPRESSIVE_DEFAULT_EFFECTS_STIFFNESS = 1600f;
-    public static final float EXPRESSIVE_SLOW_EFFECTS_STIFFNESS = 800f;
-    public static final float EXPRESSIVE_EFFECTS_DAMPING = 1f;
-
-    /** Legacy M3 easing, retained only for window/effect animations that cannot use a spring. */
+    /** Material 3 emphasized: the two-segment path, not the (0.2, 0, 0, 1) approximation. */
     public static final Interpolator EMPHASIZED = new PathInterpolator(emphasizedPath());
     public static final Interpolator EMPHASIZED_DECELERATE = new PathInterpolator(0.05f, 0.7f, 0.1f, 1f);
     public static final Interpolator EMPHASIZED_ACCELERATE = new PathInterpolator(0.3f, 0f, 0.8f, 0.15f);
@@ -50,28 +37,47 @@ public final class Motion {
     }
 
     /**
-     * NEWTUBE(m3e): a small action uses the official fast-spatial expressive spring. Press-in is
-     * immediate; the spring owns only geometry on the way back. Alpha/color never borrow this spec.
+     * NEWTUBE(motion): pop {@code view} - scale to 78%, overshoot to 112%, settle - for an action
+     * that just took effect under the finger (a like, a dislike).
      */
     public static void pop(android.view.View view) {
         if (view == null) {
             return;
         }
+        android.animation.Keyframe k0 = android.animation.Keyframe.ofFloat(0f, 1f);
+        android.animation.Keyframe k1 = android.animation.Keyframe.ofFloat(0.35f, 0.78f);
+        android.animation.Keyframe k2 = android.animation.Keyframe.ofFloat(0.75f, 1.12f);
+        android.animation.Keyframe k3 = android.animation.Keyframe.ofFloat(1f, 1f);
+        android.animation.ObjectAnimator pop = android.animation.ObjectAnimator.ofPropertyValuesHolder(view,
+                android.animation.PropertyValuesHolder.ofKeyframe(android.view.View.SCALE_X, k0, k1, k2, k3),
+                android.animation.PropertyValuesHolder.ofKeyframe(android.view.View.SCALE_Y, k0, k1, k2, k3));
+        pop.setDuration(POP_MS);
+        pop.setInterpolator(STANDARD);
+        pop.start();
+    }
+
+    /**
+     * Expressive pressed response for list/card actions: compress a hair, then settle back.
+     * Kept deliberately subtler than {@link #pop}: this accompanies a normal setting/navigation
+     * action rather than celebrating a like.
+     */
+    public static void tap(android.view.View view) {
+        if (view == null) {
+            return;
+        }
         view.animate().cancel();
-        view.setScaleX(0.86f);
-        view.setScaleY(0.86f);
-        androidx.dynamicanimation.animation.SpringAnimation sx =
-                new androidx.dynamicanimation.animation.SpringAnimation(
-                        view, androidx.dynamicanimation.animation.DynamicAnimation.SCALE_X, 1f);
-        androidx.dynamicanimation.animation.SpringAnimation sy =
-                new androidx.dynamicanimation.animation.SpringAnimation(
-                        view, androidx.dynamicanimation.animation.DynamicAnimation.SCALE_Y, 1f);
-        sx.getSpring().setStiffness(EXPRESSIVE_FAST_SPATIAL_STIFFNESS)
-                .setDampingRatio(EXPRESSIVE_FAST_SPATIAL_DAMPING);
-        sy.getSpring().setStiffness(EXPRESSIVE_FAST_SPATIAL_STIFFNESS)
-                .setDampingRatio(EXPRESSIVE_FAST_SPATIAL_DAMPING);
-        sx.start();
-        sy.start();
+        view.animate()
+                .scaleX(0.985f)
+                .scaleY(0.985f)
+                .setDuration(55)
+                .setInterpolator(STANDARD_ACCELERATE)
+                .withEndAction(() -> view.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(180)
+                        .setInterpolator(EMPHASIZED_DECELERATE)
+                        .start())
+                .start();
     }
 
     /**

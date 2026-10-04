@@ -22,7 +22,7 @@
         android:paddingBottom="12dp">
 
         <View
-            android:layout_width="32dp"
+            android:layout_width="36dp"
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
@@ -118,25 +118,15 @@
             <!-- One entry for both TV apps; remains available after the onboarding prompt hides. -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/cast_sheet_link_code"
-                style="@style/Widget.MaterialComponents.Button"
+                style="@style/Widget.NewTube.Button.Pill"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
-                android:elevation="0dp"
-                android:fontFamily="sans-serif-medium"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:letterSpacing="0"
                 android:minHeight="48dp"
-                android:stateListAnimator="@null"
                 android:text="@string/mobile_cast_code_title"
-                android:textAllCaps="false"
-                android:textColor="@color/mobile_color_background"
                 android:textSize="14sp"
-                android:textStyle="normal"
-                app:backgroundTint="@color/mobile_color_on_surface"
                 app:cornerRadius="16dp" />
 
         </LinearLayout>
