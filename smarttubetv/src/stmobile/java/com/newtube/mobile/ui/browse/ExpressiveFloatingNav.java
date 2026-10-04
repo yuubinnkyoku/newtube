@@ -266,20 +266,30 @@ public final class ExpressiveFloatingNav extends LinearLayout {
 
     private int selectedWidth(Holder holder) {
         float textWidth = holder.button.getPaint().measureText(holder.item.title.toString());
-        int desired = Math.round(textWidth) + dp(54);
+
+        // MaterialButton has non-trivial content insets. Measuring only text + an arbitrary
+        // constant was why even "ホーム" collapsed to "ホ…". Count the real button padding plus
+        // the explicit icon/gap from item_mobile_floating_nav.xml.
+        int desired = (int) Math.ceil(textWidth)
+                + holder.button.getPaddingStart()
+                + holder.button.getPaddingEnd()
+                + dp(20)   // icon
+                + dp(6)    // icon-to-label gap
+                + dp(4);   // anti-clipping breathing room
 
         int available = getWidth();
         if (available <= 0) {
             available = getResources().getDisplayMetrics().widthPixels - dp(24);
         }
 
-        // Each other destination keeps a 44dp touch/visual slot and every wrapper has 2dp margins
-        // on both sides. This guarantees the selected pill can never push outside the floating bar.
+        // Inactive destinations stay compact, but the selected pill may consume all genuinely
+        // free width. Never force a minimum wider than what the bar can actually provide.
         int siblings = Math.max(0, mItems.size() - 1);
         int max = available - siblings * dp(44) - mItems.size() * dp(4);
-        max = Math.max(dp(96), max);
+        int safeMax = Math.max(dp(72), max);
+        int min = Math.min(dp(96), safeMax);
 
-        return Math.max(dp(96), Math.min(desired, max));
+        return Math.max(min, Math.min(desired, safeMax));
     }
 
     private int dp(int dp) {
