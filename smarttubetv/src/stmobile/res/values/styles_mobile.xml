@@ -3,41 +3,63 @@
     <!--
       Touch UI theme for the stmobile flavor.
 
-      Deliberately Theme.MaterialComponents (NOT a Theme.AppCompat fallback): Material
-      Components 1.5.0 (`materialVersion` in SharedModules/constants.gradle) is already
-      pulled into this exact Gradle module graph at runtime via the `chatkit` library
-      dependency (smarttubetv/build.gradle -> implementation project(':chatkit') ->
-      com.google.android.material:material:1.5.0), and `filepicker-lib` (a dependency
-      of `common`) depends on the same artifact/version. So Material Components was
-      already proven to resolve cleanly against this project's pinned
-      appcompat/fragment/leanback versions before this change - no fallback to
-      AppCompat + cardview was needed.
-
-      NEWTUBE(theme): DayNight, with a palette for each side - values/colors_mobile.xml is the
-      light one, values-night/ the dark one the app always had. In Material 1.14
-      DayNight.NoActionBar under values-night IS Theme.MaterialComponents.NoActionBar (the parent
-      this theme had while it was dark-only), so the dark theme is exactly what it was. The light
-      side needs its own palette, not just the parent: with a DayNight parent under the old dark
-      palette, unchecked radio rings and checkbox outlines came out #060606 on #0F0F0F.
-      Which side a screen gets is the Theme setting (System default / Light / Dark, ThemeMode),
-      applied as a night-mode override when each screen is created (MotherActivity) - the player
-      stays dark in both, like YouTube's: its chrome uses the fixed mobile_player_* colours.
+      MDC 1.14.0 is the final stable Views release and includes the Material 3 Expressive
+      theme/component set. NewTube stays Views-based here, but now opts into that set directly.
+      values/colors_mobile.xml and values-night/colors_mobile.xml provide one semantic scheme on
+      both sides; ThemeMode still drives the night qualifier. The player chrome remains fixed dark.
     -->
-    <style name="Theme.NewTube" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/mobile_color_primary</item>
+    <style name="Theme.NewTube" parent="Theme.Material3Expressive.Light.NoActionBar">
         <item name="colorPrimaryDark">@color/mobile_color_primary_dark</item>
-        <!-- Selection controls (checkbox, radio, switch, text caret) and any untinted
-             indeterminate ProgressBar read the accent. Left at the framework default this
-             was Material pink on a black-and-red app: the whole settings screen - section
-             headers, ticks, radio dots - came out #FF4081. Monochrome instead, per the
-             "subtle states, no tints" rule; red stays the brand/playback colour and the
-             one accent tint left is the cast-connected icon. -->
-        <item name="colorAccent">@color/mobile_color_on_surface</item>
-        <item name="colorSecondary">@color/mobile_color_on_surface</item>
-        <item name="colorControlActivated">@color/mobile_color_on_surface</item>
+        <!-- NEWTUBE(m3e): complete semantic role mapping. MDC 1.14's expressive widgets read
+             these roles directly (active indicators, state layers, tonal surfaces, dialogs). -->
+        <item name="colorPrimary">@color/mobile_color_primary</item>
+        <item name="colorOnPrimary">@color/mobile_color_on_primary</item>
+        <item name="colorPrimaryContainer">@color/mobile_color_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/mobile_color_on_primary_container</item>
+        <item name="colorPrimaryInverse">@color/mobile_color_primary_inverse</item>
+        <item name="colorPrimaryFixed">@color/mobile_color_primary_fixed</item>
+        <item name="colorPrimaryFixedDim">@color/mobile_color_primary_fixed_dim</item>
+        <item name="colorOnPrimaryFixed">@color/mobile_color_on_primary_fixed</item>
+        <item name="colorOnPrimaryFixedVariant">@color/mobile_color_on_primary_fixed_variant</item>
+        <item name="colorSecondary">@color/mobile_color_secondary</item>
+        <item name="colorOnSecondary">@color/mobile_color_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/mobile_color_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/mobile_color_on_secondary_container</item>
+        <item name="colorSecondaryFixed">@color/mobile_color_secondary_fixed</item>
+        <item name="colorSecondaryFixedDim">@color/mobile_color_secondary_fixed_dim</item>
+        <item name="colorOnSecondaryFixed">@color/mobile_color_on_secondary_fixed</item>
+        <item name="colorOnSecondaryFixedVariant">@color/mobile_color_on_secondary_fixed_variant</item>
+        <item name="colorTertiary">@color/mobile_color_tertiary</item>
+        <item name="colorOnTertiary">@color/mobile_color_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/mobile_color_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/mobile_color_on_tertiary_container</item>
+        <item name="colorTertiaryFixed">@color/mobile_color_tertiary_fixed</item>
+        <item name="colorTertiaryFixedDim">@color/mobile_color_tertiary_fixed_dim</item>
+        <item name="colorOnTertiaryFixed">@color/mobile_color_on_tertiary_fixed</item>
+        <item name="colorOnTertiaryFixedVariant">@color/mobile_color_on_tertiary_fixed_variant</item>
         <item name="android:colorBackground">@color/mobile_color_background</item>
+        <item name="colorOnBackground">@color/mobile_color_on_surface</item>
         <item name="colorSurface">@color/mobile_color_surface</item>
         <item name="colorOnSurface">@color/mobile_color_on_surface</item>
+        <item name="colorSurfaceVariant">@color/mobile_color_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/mobile_color_on_surface_secondary</item>
+        <item name="colorSurfaceDim">@color/mobile_color_surface_dim</item>
+        <item name="colorSurfaceBright">@color/mobile_color_surface_bright</item>
+        <item name="colorSurfaceContainerLowest">@color/mobile_color_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/mobile_color_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/mobile_color_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/mobile_color_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/mobile_color_surface_container_highest</item>
+        <item name="colorSurfaceInverse">@color/mobile_color_inverse_surface</item>
+        <item name="colorOnSurfaceInverse">@color/mobile_color_on_inverse_surface</item>
+        <item name="colorOutline">@color/mobile_color_outline</item>
+        <item name="colorOutlineVariant">@color/mobile_color_outline_variant</item>
+        <item name="colorError">@color/mobile_color_error</item>
+        <item name="colorOnError">@color/mobile_color_on_error</item>
+        <item name="colorErrorContainer">@color/mobile_color_error_container</item>
+        <item name="colorOnErrorContainer">@color/mobile_color_on_error_container</item>
+        <item name="colorAccent">@color/mobile_color_primary</item>
+        <item name="colorControlActivated">@color/mobile_color_primary</item>
         <item name="android:windowBackground">@color/mobile_color_background</item>
         <!-- Solid app-colored system bars from the first frame (otherwise colorPrimaryDark red
              flashes in the status bar until the runtime chrome in MobileActivity lands). -->
@@ -82,12 +104,12 @@
         <item name="snackbarButtonStyle">@style/Widget.NewTube.Snackbar.Action</item>
     </style>
 
-    <style name="Widget.NewTube.Snackbar.Action" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
+    <style name="Widget.NewTube.Snackbar.Action" parent="Widget.Material3Expressive.Button.TextButton.Snackbar">
         <item name="android:textColor">@color/mobile_color_background</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="TextAppearance.NewTube.Button" parent="TextAppearance.MaterialComponents.Button">
+    <style name="TextAppearance.NewTube.Button" parent="TextAppearance.Material3.LabelLarge.Emphasized">
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
     </style>
@@ -100,25 +122,19 @@
       the feed/page error actions ("Sign in", "Try again"), sign-in and add-device. The visible
       pill is 40dp tall; the 4dp insets keep the touch target at 48dp.
     -->
-    <style name="Widget.NewTube.Button.Pill" parent="Widget.MaterialComponents.Button">
-        <item name="android:textColor">@color/mobile_color_on_inverse_surface</item>
-        <item name="backgroundTint">@color/mobile_color_inverse_surface</item>
-        <item name="rippleColor">@color/mobile_color_inverse_ripple</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">14sp</item>
+    <style name="Widget.NewTube.Button.Pill" parent="Widget.Material3Expressive.Button">
+        <!-- Keep the M3E filled-button color/state/shape machinery; only preserve NewTube's
+             48dp touch target and sentence-case copy. The visible small button remains 40dp. -->
         <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
         <item name="android:insetTop">4dp</item>
         <item name="android:insetBottom">4dp</item>
         <item name="android:minHeight">48dp</item>
-        <item name="android:paddingStart">20dp</item>
-        <item name="android:paddingEnd">20dp</item>
-        <item name="android:elevation">0dp</item>
-        <item name="android:stateListAnimator">@null</item>
-        <item name="cornerRadius">20dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
     </style>
 
-    <style name="ThemeOverlay.NewTube.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+    <style name="ThemeOverlay.NewTube.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.NewTube.BottomSheet</item>
         <!-- ElevationOverlayProvider reads this off the THEME, not off the widget style.
              Left on, the sheet's 16dp elevation blended 14.75% white into colorSurface -
@@ -129,18 +145,18 @@
 
     <!--
       The sheet surface itself: our flat #1E1E1E (no elevation overlay) with the same top-only
-      16dp corners as bg_mobile_sheet, so the frame and the content it wraps line up exactly and
+      28dp corners as bg_mobile_sheet, so the frame and the content it wraps line up exactly and
       the colour runs under the gesture bar to the display edge.
     -->
-    <style name="Widget.NewTube.BottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
-        <item name="backgroundTint">@color/mobile_color_surface</item>
+    <style name="Widget.NewTube.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@color/mobile_color_surface_container_low</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.NewTube.BottomSheet</item>
     </style>
 
     <style name="ShapeAppearance.NewTube.BottomSheet" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopLeft">16dp</item>
-        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">28dp</item>
+        <item name="cornerSizeTopRight">28dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
@@ -251,7 +267,7 @@
       destructive action. The stock look (grey box + all-caps red pair) read as foreign
       next to the bottom sheets (user feedback).
     -->
-    <style name="MobileAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="MobileAlertDialog" parent="ThemeOverlay.Material3Expressive.MaterialAlertDialog">
         <item name="colorSurface">@color/mobile_color_surface</item>
         <item name="android:textColorPrimary">@color/mobile_color_on_surface</item>
         <item name="materialAlertDialogBodyTextStyle">@style/MobileAlertDialogBody</item>
@@ -261,15 +277,15 @@
     </style>
 
     <style name="MobileAlertDialogShape" parent="ShapeAppearance.MaterialComponents.MediumComponent">
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">28dp</item>
     </style>
 
-    <style name="MobileAlertDialogBody" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+    <style name="MobileAlertDialogBody" parent="MaterialAlertDialog.Material3.Body.Text">
         <item name="android:textColor">@color/mobile_color_on_surface_secondary</item>
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="MobileAlertDialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="MobileAlertDialogButton" parent="Widget.Material3Expressive.Button.TextButton.Dialog">
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/mobile_color_on_surface</item>
         <item name="android:textSize">15sp</item>
@@ -302,7 +318,7 @@
         <item name="android:paddingBottom">18dp</item>
     </style>
 
-    <style name="MobileCastCodeDialogTitle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+    <style name="MobileCastCodeDialogTitle" parent="MaterialAlertDialog.Material3Expressive.Title.Text">
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">@color/mobile_color_on_surface</item>
         <item name="android:textSize">20sp</item>
@@ -317,7 +333,7 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
-    <style name="MobileCastCodeDialogPrimaryButton" parent="Widget.MaterialComponents.Button">
+    <style name="MobileCastCodeDialogPrimaryButton" parent="Widget.Material3Expressive.Button">
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">normal</item>
@@ -337,9 +353,11 @@
     <!-- Regular weight at 11sp tracks the YouTube bar labels (medium/bold read heavier than
          theirs side-by-side; the old 10sp-medium choice predates dropping the long
          "Listas de reproducción" label from the bar). -->
-    <style name="MobileBottomNavText" parent="TextAppearance.MaterialComponents.Caption">
+    <style name="MobileBottomNavText" parent="TextAppearance.Material3.LabelSmall">
         <item name="android:textSize">11sp</item>
-        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    <style name="MobileBottomNavText.Active" parent="TextAppearance.Material3.LabelSmall.Emphasized">
+        <item name="android:textSize">11sp</item>
     </style>
 
     <!-- Watch-page loading skeleton (alpha-pulsed from code while related videos load). -->
@@ -371,7 +389,7 @@
     <style name="MobileSkeletonRelatedThumb">
         <item name="android:layout_width">@dimen/mobile_watch_related_thumb_width</item>
         <item name="android:layout_height">@dimen/mobile_watch_related_thumb_height</item>
-        <item name="android:background">@drawable/bg_skeleton_block</item>
+        <item name="android:background">@drawable/bg_skeleton_thumbnail</item>
     </style>
     <style name="MobileSkeletonRelatedTextColumn">
         <item name="android:layout_width">match_parent</item>
@@ -474,7 +492,7 @@
     <style name="MobileSkeletonFeedThumb">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">204dp</item>
-        <item name="android:background">@drawable/bg_skeleton_block</item>
+        <item name="android:background">@drawable/bg_skeleton_thumbnail</item>
     </style>
     <style name="MobileSkeletonFeedLineWide">
         <item name="android:layout_width">match_parent</item>

@@ -620,10 +620,9 @@
                     android:layout_marginTop="12dp"
                     android:paddingHorizontal="@dimen/mobile_watch_content_padding"
                     android:ellipsize="end"
-                    android:fontFamily="sans-serif-medium"
                     android:maxLines="3"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
                     android:textColor="@color/mobile_color_on_surface"
-                    android:textSize="18sp"
                     tools:text="A great video title that may wrap across a couple of lines" />
 
                 <!-- views + date + expand-description affordance -->
@@ -645,8 +644,8 @@
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                         android:textColor="@color/mobile_color_on_surface_secondary"
-                        android:textSize="14sp"
                         tools:text="1,234,567 views • Jan 1, 2026" />
 
                     <ImageView
@@ -666,9 +665,9 @@
                     android:layout_marginTop="4dp"
                     android:paddingHorizontal="@dimen/mobile_watch_content_padding"
                     android:autoLink="web"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="@color/mobile_color_on_surface_secondary"
                     android:textColorLink="@color/mobile_color_link"
-                    android:textSize="14sp"
                     android:visibility="gone"
                     tools:text="Video description text..."
                     tools:visibility="visible" />
@@ -905,10 +904,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
-                            android:fontFamily="sans-serif-medium"
                             android:maxLines="1"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                             android:textColor="@color/mobile_color_on_surface"
-                            android:textSize="15sp"
                             tools:text="Channel name" />
 
                         <TextView
@@ -917,8 +915,8 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:maxLines="1"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                             android:textColor="@color/mobile_color_on_surface_secondary"
-                            android:textSize="13sp"
                             android:visibility="gone"
                             tools:text="1.2M subscribers"
                             tools:visibility="visible" />
@@ -927,23 +925,11 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/mobile_watch_subscribe"
-                        style="@style/Widget.MaterialComponents.Button"
+                        style="@style/Widget.NewTube.Button.Pill"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:backgroundTint="@color/mobile_color_inverse_surface"
-                        android:fontFamily="sans-serif-medium"
-                        android:insetTop="4dp"
-                        android:insetBottom="4dp"
-                        android:letterSpacing="0"
-                        android:minHeight="48dp"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="0dp"
-                        android:text="@string/mobile_watch_subscribe"
-                        android:textAllCaps="false"
-                        android:textColor="@color/mobile_color_on_inverse_surface"
-                        android:textSize="14sp"
-                        app:cornerRadius="20dp" />
+                        android:text="@string/mobile_watch_subscribe" />
 
                 </LinearLayout>
 

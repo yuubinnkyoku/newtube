@@ -42,8 +42,7 @@
         android:paddingStart="16dp"
         android:text="@string/app_name"
         android:textColor="@color/mobile_color_on_surface"
-        android:textSize="22sp"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge.Emphasized"
         app:layout_constraintEnd_toStartOf="@id/mobile_cast_button"
         app:layout_constraintStart_toEndOf="@id/mobile_title_back"
         app:layout_constraintTop_toTopOf="parent" />
@@ -183,7 +182,9 @@
                 android:id="@+id/mobile_you_account_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_mobile_account_card"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
@@ -212,9 +213,8 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/dialog_add_account"
-                        android:textColor="@color/mobile_color_on_surface"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge.Emphasized"
+                        android:textColor="@color/mobile_color_on_surface" />
 
                     <TextView
                         android:id="@+id/mobile_you_account_sub"
@@ -223,8 +223,8 @@
                         android:layout_marginTop="2dp"
                         android:ellipsize="end"
                         android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                         android:textColor="@color/mobile_color_on_surface_secondary"
-                        android:textSize="14sp"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -274,7 +274,7 @@
         android:focusable="true"
         android:visibility="gone"
         app:cardBackgroundColor="@android:color/black"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="@dimen/mobile_shape_large_increased"
         app:cardElevation="8dp"
         app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
@@ -340,24 +340,17 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Matched against the real YouTube app on a Pixel 9 (2026-07): their icon/label row
-         measures ~51dp with 24dp icons and ~10sp labels, content centered, gesture inset
-         absorbed below. Stock M2 wrap_content (56dp row) is the closest the widget allows;
-         the view pads itself by the gesture-navigation inset (paddingBottomSystemWindowInsets)
-         so the bar paints through to the display edge without squeezing the row. -->
+    <!-- M3 Expressive navigation bar: 64dp container, semantic selected indicator, expressive
+         state motion and type are supplied by MDC 1.14. The gesture inset remains delegated to
+         the component so the container paints to the display edge without shrinking its content. -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/mobile_bottom_nav"
+        style="@style/Widget.Material3Expressive.BottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/mobile_color_background"
-        app:itemIconSize="24dp"
-        app:itemIconTint="@color/mobile_bottom_nav_item"
-        app:itemTextAppearanceActive="@style/MobileBottomNavText"
-        app:itemTextAppearanceActiveBoldEnabled="false"
-        app:itemTextAppearanceInactive="@style/MobileBottomNavText"
-        app:paddingBottomSystemWindowInsets="true"
-        app:itemTextColor="@color/mobile_bottom_nav_item"
+        app:itemActiveIndicatorEnabled="true"
         app:labelVisibilityMode="labeled"
+        app:paddingBottomSystemWindowInsets="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
