@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,8 +32,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
-import com.google.android.material.badge.BadgeDrawable;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
 import com.liskovsoft.mediaserviceinterfaces.oauth.Account;
@@ -90,12 +87,12 @@ import java.util.List;
  * Drives the existing {@link BrowsePresenter} exactly like the TV
  * {@code BrowseFragment} does (setView/onViewInitialized + the
  * onSectionFocused/onVideoItemClicked/onScrollEnd input contract), but renders with a
- * {@link BottomNavigationView} for sections (in place of the Leanback headers column)
+ * {@link ExpressiveFloatingNav} for sections (in place of the Leanback headers column)
  * and a flat {@link RecyclerView} grid for the selected section's videos (in place of
  * nested Leanback rows/PageRow fragments - row/shorts/multi-grid layouts are a later
  * wave per ROADMAP.md Wave 2).
  *
- * {@code BottomNavigationView} hard-caps at 5 items, but {@code BrowsePresenter} can
+ * The floating phone nav intentionally shows at most 5 items, but {@code BrowsePresenter} can
  * deliver 10+ sections (Home, Trending, Subscriptions, History, Music, Gaming, News,
  * Playlists, Settings, ...). The bar shows only the curated
  * {@link #PREFERRED_SECTION_IDS} plus the synthetic You tab - no backfill; every other
@@ -107,7 +104,7 @@ import java.util.List;
  */
 public class MobileBrowseActivity extends MobileActivity
         implements BrowseView, MiniPlayerBridge.MiniHost {
-    /** BottomNavigationView item ids must be non-zero; BrowseSection ids start at 0. */
+    /** Floating-nav item ids must be non-zero; BrowseSection ids start at 0. */
     private static final int ITEM_ID_OFFSET = 1_000_000;
     private static final int SCROLL_END_THRESHOLD_ITEMS = 6;
     /**
@@ -116,7 +113,7 @@ public class MobileBrowseActivity extends MobileActivity
      * (one /browse, ~0.2-0.5 s) lands before the reader reaches the end. See HomeSectionPacer.
      */
     private static final int NEAR_END_LOOKAHEAD_ITEMS = 16;
-    /** BottomNavigationView hard-caps at this many items. */
+    /** The phone floating nav intentionally caps itself at this many destinations. */
     private static final int MAX_NAV_ITEMS = 5;
     /**
      * Menu item id of the synthetic "You" tab (account + extra sections + settings). Far above
@@ -158,7 +155,7 @@ public class MobileBrowseActivity extends MobileActivity
     private boolean mGridHiddenForSkeleton;
     private GridLayoutManager mLayoutManager;
     private VideoCardAdapter mAdapter;
-    private BottomNavigationView mBottomNav;
+    private ExpressiveFloatingNav mBottomNav;
     // "You" tab panel (account header + grouped section rows + Settings row; replaces the drawer).
     private View mYouPanel;
     private LinearLayout mYouRows;
@@ -917,27 +914,26 @@ public class MobileBrowseActivity extends MobileActivity
     }
 
     private void setupBottomNav() {
-        mBottomNav.setOnItemSelectedListener(item -> {
+        mBottomNav.setOnItemSelectedListener(itemId -> {
             if (!mSuppressNavCallback) {
                 Haptics.tick(mBottomNav);
-                onNavItemChosen(item.getItemId());
+                onNavItemChosen(itemId);
             }
-            return true;
         });
         // NEWTUBE(motion): tapping the tab you are on glides a scrolled feed back to the top, like
         // YouTube; at the top it does what it always did (repaint + refresh the section).
-        mBottomNav.setOnItemReselectedListener(item -> {
+        mBottomNav.setOnItemReselectedListener(itemId -> {
             if (mSuppressNavCallback) {
                 return;
             }
             Haptics.tick(mBottomNav);
-            View selected = mBottomNav.findViewById(item.getItemId());
+            View selected = mBottomNav.findViewById(itemId);
             Motion.tap(selected);
-            if (item.getItemId() != YOU_ITEM_ID && mContentGrid != null
+            if (itemId != YOU_ITEM_ID && mContentGrid != null
                     && mContentGrid.getVisibility() == View.VISIBLE && mContentGrid.canScrollVertically(-1)) {
                 smoothScrollGridToTop();
             } else {
-                onNavItemChosen(item.getItemId());
+                onNavItemChosen(itemId);
             }
         });
     }
